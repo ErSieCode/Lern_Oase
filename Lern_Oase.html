@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lern-Oase – Wissensserien für Kids</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --primary: #42b883;
+      --secondary: #35495e;
+      --category-wissen: #b0d8a4;
+      --category-geschichte: #f9d776;
+      --category-kreativ: #ffb8b2;
+      --category-maus: #c3bcf4;
+      --card: #fff;
+      --card-shadow: 0 2px 10px rgba(60,60,80,0.07);
+      --radius: 18px;
+      --text: #283046;
+      --filter-bg: #fff;
+      --filter-active: #42b883;
+      --input: #f1f1f1;
+    }
+    html, body { margin: 0; padding: 0;}
+    body {
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: linear-gradient(90deg, #a3eac3 40%, #cff3fc 100%);
+      text-align: center;
+      padding: 1.5rem 1rem 1.1rem 1rem;
+      border-radius: 0 0 2.5rem 2.5rem;
+      margin-bottom: 1rem;
+    }
+    header h1 {
+      letter-spacing: 1px;
+      font-weight: 900;
+      margin: 0 0 0.3rem 0;
+      font-size: 2.1rem;
+      color: var(--secondary);
+      text-shadow: 1px 2px 8px #d7f8e2;
+    }
+    header p {
+      font-size: 1.16rem;
+      color: #3e4251;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .filters {
+      display: flex;
+      gap: 0.5rem;
+      margin: 1.1rem auto 0 auto;
+      padding: 0.25rem;
+      justify-content: center;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      border-radius: var(--radius);
+      z-index: 110;
+      flex-wrap: wrap;
+      max-width: 670px;
+    }
+    .filter-btn {
+      background: var(--filter-bg);
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: var(--radius);
+      color: var(--secondary);
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      font-size: 1.06rem;
+      outline: 2px solid transparent;
+    }
+    .filter-btn.active,
+    .filter-btn:hover {
+      background: var(--category-wissen);
+      color: var(--filter-active);
+    }
+    .search-bar {
+      display: flex;
+      gap: 0.5rem;
+      max-width: 470px;
+      margin: 1.2rem auto 0.7rem auto;
+      padding: 0 1rem;
+    }
+    .search-bar input {
+      flex: 1;
+      border: none;
+      background: var(--input);
+      padding: 0.55rem 1rem;
+      border-radius: var(--radius);
+      font-size: 1.07rem;
+      outline: none;
+    }
+    .search-bar button {
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      padding: 0.55rem 1.2rem;
+      font-weight: bold;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 1.09rem;
+    }
+    .series-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.15rem;
+      margin: 1.1rem auto 3rem auto;
+      max-width: 550px;
+      padding: 0 1rem;
+    }
+    @media (min-width: 620px) {
+      .series-list {
+        grid-template-columns: 1fr 1fr;
+        max-width: 1035px;
+      }
+    }
+    .series-card {
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      padding: 1.17rem 1.15rem 1.05rem 1.15rem;
+      transition: transform 0.18s, box-shadow 0.22s;
+      min-height: 148px;
+      position: relative;
+    }
+    .series-card:hover {
+      transform: translateY(-5px) scale(1.025);
+      box-shadow: 0 5px 24px 0 #97ecc9;
+    }
+    .series-card .serien-link {
+      color: var(--primary);
+      text-decoration: underline;
+      font-weight: 600;
+    }
+    .series-title {
+      font-size: 1.12rem;
+      font-weight: bold;
+      margin: 0 0 0.15rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.45em;
+    }
+    .series-category {
+      position: absolute;
+      right: 1.12em;
+      top: 1.15em;
+      font-size: 1.01rem;
+      background: #d3f2c6;
+      padding: 0.16em 0.55em;
+      border-radius: 1.2em;
+      color: #536648;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      z-index: 2;
+    }
+    .cat-wissen { background: var(--category-wissen); color: #39833d;}
+    .cat-geschichte { background: var(--category-geschichte); color: #946c16;}
+    .cat-kreativ { background: var(--category-kreativ); color: #ba4343;}
+    .cat-maus { background: var(--category-maus); color: #564a9f;}
+    .series-desc {
+      font-size: 1.01rem;
+      margin-bottom: 0.33em;
+      margin-top: 0.09em;
+      color: #424a5a;
+      font-weight: 420;
+    }
+    /* Hinzufügen-Modal und Buttons */
+    .add-btn {
+      position: fixed;
+      bottom: 26px;
+      right: 19px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      width: 54px;
+      height: 54px;
+      box-shadow: 0 2px 8px #93e4c2;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      transition: background 0.2s;
+    }
+    .add-btn:hover { background: #31d980; }
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(120,140,160,0.073);
+      display: none;
+      place-items: center;
+      backdrop-filter: blur(2px);
+      z-index: 999;
+    }
+    .modal.active { display: grid; }
+    .modal-content {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 56px #8ed2c1;
+      padding: 2rem 1.2rem 1.2rem 1.2rem;
+      width: 97vw;
+      max-width: 365px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.82rem;
+      position: relative;
+    }
+    .modal-content label {
+      margin-bottom: 0.13em;
+      font-size: 0.99rem;
+    }
+    .modal-content input, .modal-content select {
+      width: 100%;
+      padding: 0.45em 0.7em;
+      border-radius: 8px;
+      background: var(--input);
+      border: none;
+      font-size: 1rem;
+    }
+    .modal-content .modal-actions {
+      margin-top: 0.78em;
+      display: flex;
+      gap: 0.7em;
+      justify-content: flex-end;
+    }
+    .modal-content button {
+      padding: 0.42em 1.1em;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.01rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .modal-content .cancel-btn {
+      background: #ddd;
+      color: #333;
+    }
+    .modal-close {
+      position: absolute;
+      right: 1em; top: 1em;
+      font-size: 1.52rem;
+      background: none;
+      border: none;
+      color: #42b883;
+      cursor: pointer;
+      z-index: 22;
+    }
+    ::selection { background: #bcfacf; }
+    /* Serie Kategorien Legende für Buttons */
+    .emoji { font-size: 1.13em; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Lern-Oase 🌱</h1>
+    <p>
+      Entdecke wunderbare und spannende Wissens- und Kreativserien für Kinder.<br />
+      Lass dich inspirieren, lerne Neues und tauche ein in die bunte Welt des Wissens!
+    </p>
+  </header>
+  <div class="filters">
+    <button class="filter-btn active" data-filter="Alle">🌈 Alle</button>
+    <button class="filter-btn" data-filter="Wissen">🧠 Wissen</button>
+    <button class="filter-btn" data-filter="Geschichte">📜 Geschichte</button>
+    <button class="filter-btn" data-filter="Kreativ">🎨 Kreativ</button>
+    <button class="filter-btn" data-filter="Die Maus">🐭 Die Maus</button>
+    <button class="filter-btn" data-filter="Favoriten">⭐ Favoriten</button>
+  </div>
+  <div class="search-bar">
+    <input id="searchInput" type="text" placeholder="🔍 Wonach möchtest du heute stöbern oder lernen?" autocomplete="off" aria-label="Suche nach Serien">
+    <button onclick="randomSerie()">🎲 Zufall</button>
+  </div>
+  <main class="series-list" id="seriesList"></main>
+  <button class="add-btn" onclick="openAddModal()" title="Eigene Serie/Lieblingslink hinzufügen">＋</button>
+
+  <!-- Modal für Link hinzufügen -->
+  <div class="modal" id="addModal" tabindex="-1">
+    <form id="addForm" class="modal-content" autocomplete="off">
+      <button type="button" class="modal-close" onclick="closeAddModal()" title="Schließen">×</button>
+      <label>Titel *</label>
+      <input type="text" name="title" required maxlength="70" placeholder="Name der Serie/Link">
+      <label>YouTube URL *</label>
+      <input type="url" name="url" required placeholder="https://youtube.com/playlist?...">
+      <label>Kategorie *</label>
+      <select name="category" required>
+        <option value="">Kategorie wählen</option>
+        <option value="Wissen">🧠 Wissen</option>
+        <option value="Geschichte">📜 Geschichte</option>
+        <option value="Kreativ">🎨 Kreativ</option>
+        <option value="Die Maus">🐭 Die Maus</option>
+      </select>
+      <label>Kurze Beschreibung</label>
+      <input type="text" name="desc" maxlength="140" placeholder="Was ist das Besondere? (optional)">
+      <label>Emoji/Zeichen</label>
+      <input type="text" name="emoji" maxlength="2" placeholder="🦄 (optional)">
+      <div class="modal-actions">
+        <button type="submit">Hinzufügen</button>
+        <button type="button" class="cancel-btn" onclick="closeAddModal()">Abbrechen</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // --- Serien-Daten ---
+    const serien = [
+      // KNOWLEDGE
+      {
+        title: "Wer nicht fragt, stirbt dumm",
+        category: "Wissen",
+        desc: "Lustige und verblüffende Fakten aus der Welt: Arte beantwortet Kids-Fragen zu Alltag, Natur, Wissenschaft.",
+        url: "https://youtube.com/playlist?list=PLlQWnS27jXh9qyYAGcB23Fe0s5UvslNNK&si=lhdLwBEpTP8sL0JI",
+        emoji: "🧠"
+      },
+      {
+        title: "Wissenschaftsdokus (Arte)",
+        category: "Wissen",
+        desc: "Wissenschaft verständlich erklärt – spannende Wissenschaftsdokus für Kinder und Familien.",
+        url: "https://youtube.com/playlist?list=PLlQWnS27jXh9_eNjMwbuhNhlwEmjQRr-q&si=SQPwmgHTP0bxrBwq",
+        emoji: "🔬"
+      },
+      {
+        title: "100 Sekunden Physik",
+        category: "Wissen",
+        desc: "In 100 Sekunden wird ein Phänomen aus der Physik mit anschaulichen, schnellen Animationen erklärt.",
+        url: "https://youtube.com/@100sekundenphysik?si=0F4hxz4WTsFRxpe7",
+        emoji: "⚛️"
+      },
+      {
+        title: "Löwenzahn: Staffel 1-6",
+        category: "Wissen",
+        desc: "Fritz Fuchs und Peter Lustig entdecken mit dir die spannende Welt der Technik, Umwelt, Tiere & Alltag.",
+        url: "https://youtube.com/playlist?list=PL6enpR8MLihFE2GLZeNVapgeGskPBwvff&si=7csXXvGd5B13cVze",
+        emoji: "🚎"
+      },
+      {
+        title: "Löwenzahn: Staffel 7-17",
+        category: "Wissen",
+        desc: "Noch mehr Abenteuer und spannende Experimente der Löwenzahn-Bande!",
+        url: "https://youtube.com/playlist?list=PL6enpR8MLihFEirUOxw-2zaorttFX6FtH&si=V3ZGHLI47rZrs9sa",
+        emoji: "🍃"
+      },
+      {
+        title: "Löwenzahn: Staffel 18-25",
+        category: "Wissen",
+        desc: "Ideenreiche und lehrreiche Folgen für kleine und große Tüftler.",
+        url: "https://youtube.com/playlist?list=PL6enpR8MLihFtKNjGYf_1_wNxE0Eh4q1y&si=7Hp_EApuqfWPAZGa",
+        emoji: "🌞"
+      },
+      {
+        title: "Löwenzahn: Staffel 26-33",
+        category: "Wissen",
+        desc: "Neugier pur – Mit Löwenzahn alles über Natur, Technik, Mensch lernen.",
+        url: "https://youtube.com/playlist?list=PL6enpR8MLihHt3HY7bSR0x1qeVI9KSZ-9&si=EGRThWdRmQfB9tU7",
+        emoji: "🌳"
+      },
+      {
+        title: "Löwenzahn: Staffel 33-35",
+        category: "Wissen",
+        desc: "Spannende Themen-Neustarts und frische Abenteuer für alle Fans des Wissens!",
+        url: "https://youtube.com/playlist?list=PL6enpR8MLihHEJTtI93jCkR398spLg44I&si=r83PCYCDgJYbiiao",
+        emoji: "🔎"
+      },
+      {
+        title: "Mittendrin",
+        category: "Wissen",
+        desc: "Du wolltest immer mal wissen, wie Feuerwehr, Müllabfuhr, Schule oder Bauernhof wirklich funktionieren? Hier bist du mittendrin!",
+        url: "https://youtube.com/playlist?list=PL6enpR8MLihFsIB31deaL1r7GSH7B-LwG&si=ZHAZUHUW_hCYPeL6",
+        emoji: "👀"
+      },
+      {
+        title: "Pusteblume",
+        category: "Wissen",
+        desc: "Mit Peter Lustig auf Entdeckungstour durch Alltag, Umwelt, Erfindungen. Das Beste der 80er!",
+        url: "https://youtube.com/playlist?list=PL6enpR8MLihFSj2qq4pZEi2W45gDn65wA&si=zb3wIwC-TEVRLDy2",
+        emoji: "🌼"
+      },
+      {
+        title: "GRIPS",
+        category: "Wissen",
+        desc: "Lerntricks, Wissenshäppchen, Mathe und Sprache – locker, verständlich, und motivierend für alle.",
+        url: "https://youtube.com/playlist?list=PL6enpR8MLihG_sMIkL-BbtdZvblj2LAQA&si=LhXWLtwR7sTRrEHg",
+        emoji: "📚"
+      },
+      {
+        title: "Stimmt dass...?",
+        category: "Geschichte",
+        desc: "Was ist wahr, was ein Mythos? Die Serie deckt verblüffende historische und gesellschaftliche Fakten auf.",
+        url: "https://youtube.com/playlist?list=PLlQWnS27jXh9kBYM2zEbEX8sSKoLPeLA5&si=0EhdXVrehfl7daQL",
+        emoji: "🤔"
+      },
+      {
+        title: "Karambolage (Arte)",
+        category: "Gesellschaft",
+        desc: "Deutsche & französische Alltagsrätsel und Anekdoten, humorvoll umrissen und verblüffend kreativ erläutert.",
+        url: "https://youtube.com/playlist?list=PLlQWnS27jXh_VPwh6E8J8aB9kppCppbRx&si=5qxVYrC6r4SOyN_X",
+        emoji: "🇩🇪🇫🇷"
+      },
+      {
+        title: "42 – Die Antwort auf fast alles (Arte)",
+        category: "Wissen",
+        desc: "Große Fragen des Lebens – originell, clever und unterhaltsam beantwortet.",
+        url: "https://youtube.com/playlist?list=PLlQWnS27jXh_ofqIJZH7vdOkQ-p_w9gKw&si=4tW-FlrzzLEa_Dtu",
+        emoji: "💡"
+      },
+      {
+        title: "X:Genius",
+        category: "Wissen & Gesellschaft",
+        desc: "Wissenschaft zum Staunen – die cleversten Moderator:innen nehmen dich mit auf Entdeckungsreise ins Unbekannte!",
+        url: "https://youtube.com/playlist?list=PL6W8LFD__Sajr-uJKUyxrMH-7UOUhdykC&si=rkuRUK7tJiROf4Kw",
+        emoji: "🤩"
+      },
+      {
+        title: "Art Attack",
+        category: "Kreativ",
+        desc: "Legendäre Bastel-Kunst-Show mit pfiffigen Ideen aus Alltagsgegenständen! Express yourself!",
+        url: "https://youtube.com/playlist?list=PLUCw4EgWoOGYjqj4OW4asDWkJI4aw3yE6&si=E7VqqG4VHP0I3W-A",
+        emoji: "🎨"
+      },
+      {
+        title: "Fingertips",
+        category: "Kreativ",
+        desc: "Einfache Bastel- und DIY-Projekte für kleine Hände – schnell, kreativ, bunt!",
+        url: "https://youtube.com/playlist?list=PLEo2W0-ILFOVnW5NQmu9vHYqypKeOREz2&si=ecGn1jlCbSCJTK4u",
+        emoji: "✂️"
+      },
+      {
+        title: "Basteln mit uns (Disney)",
+        category: "Kreativ",
+        desc: "Disney-Fans aufgepasst: Bastelspaß rund um Micky, Frozen und Co. zum Mitmachen.",
+        url: "https://youtube.com/playlist?list=PLbPO-7IrXtXWZeVPvEFopX_qFghOKTY8e&si=FCA_X0XW4JWPTPPy",
+        emoji: "🌟"
+      },
+      // MAUS Kategorie
+      {
+        title: "Wie wird ein Feuerwehr-Auto gebaut? (Maus)",
+        category: "Die Maus",
+        desc: "Was steckt hinter einem Feuerwehrauto? Die Maus zeigt es dir – von Motor bis Blaulicht!",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU70BwzNdUNlxCPLvkOXa5Y3s&si=Sr-vErct6NGFr6_9",
+        emoji: "🚒"
+      },
+      {
+        title: "Wie wird ein ICE gebaut? (Maus)",
+        category: "Die Maus",
+        desc: "Großes entsteht Schritt für Schritt – Die Maus nimmt dich mit auf die Baustelle des Super-Zugs!",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU70ZXrUi0dykdemfNUlAWF95&si=sUrm-Sm9zqeaNC0d",
+        emoji: "🚄"
+      },
+      {
+        title: "Stell dir vor! (Maus)",
+        category: "Die Maus",
+        desc: "Fantasiegeschichten rund um Kinderträume und kleine Wunder.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU72azZkXXRbPbXZgHuXt1_DJ&si=aZNWdwfirZVog2K_",
+        emoji: "✨"
+      },
+      {
+        title: "Klima Maus",
+        category: "Die Maus",
+        desc: "Kindgerechte Klima- und Umweltinfos – die Maus erklärt clever und anschaulich.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU7077wWl_XI5VhQFJXErbJ-r&si=T4zFx3LK_DUR1oaq",
+        emoji: "🌍"
+      },
+      {
+        title: "Lauras Machgeschichten",
+        category: "Die Maus",
+        desc: "Laura tüftelt, erfindet und erklärt logische Abläufe kreativ und leicht verständlich.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU7036NxM3VOSmNxNXqUchBvQ&si=sSi-tiGymJ4PHrzf",
+        emoji: "🔧"
+      },
+      {
+        title: "Die Maus – Zukunft",
+        category: "Die Maus",
+        desc: "Was bringt die Zukunft? Technik, Alltagsveränderung, Visionen für eine bessere Welt.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU70o9NOBCfBxcm7T4J61HlCa&si=v_aB1oPzYlWl-cIv",
+        emoji: "🤖"
+      },
+      {
+        title: "Tiergeschichten (Maus)",
+        category: "Die Maus",
+        desc: "Die beste Unterhaltung für große und kleine Tierfans. Alles über Tiere und Natur.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU71sqjZc9xCNrCblO0moQ7r2&si=JYJP5x1-ObyXSVSM",
+        emoji: "🐶"
+      },
+      {
+        title: "Klassische Maus-Videos",
+        category: "Die Maus",
+        desc: "Die zeitlosen Helden in orange – lustige und lehrreiche Geschichten für jeden Tag.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU71TWrZ-y-2i1sml6o727RjO&si=wALX7SnhwNqLld_O",
+        emoji: "🐭"
+      },
+      {
+        title: "Der kleine Maulwurf",
+        category: "Die Maus",
+        desc: "Wie lebt wohl ein Maulwurf? Schnörkellos, freundschaftlich und voller Abenteuer.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU71hR9LPTHqlcbHtPvKst-ES&si=xIYs3FuqQyZLdGy-",
+        emoji: "🕳️"
+      },
+      {
+        title: "Digital Maus",
+        category: "Die Maus",
+        desc: "Alles rund um Computer & Co – Die Maus erklärt Bits, Bytes und Coding.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU730RSjcM3n_PtxQxhImTaPu&si=OGmWui_rxAEal-r-",
+        emoji: "💻"
+      },
+      {
+        title: "Programmieren mit der Maus (Staffel 1)",
+        category: "Die Maus",
+        desc: "Kinderleicht Programmieren lernen: Einstieg in Spiele, Animationen und Coding für Kids.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU704MRDiL_qQQB54jN5xkrJM&si=eGr1m_0vSDNcPnbr",
+        emoji: "🖱️"
+      },
+      {
+        title: "Programmieren mit der Maus (Staffel 2)",
+        category: "Die Maus",
+        desc: "Weitere Folgen zum Aufbau von Coding-Skills, Animationen und digitale Welt.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU73dyjGCJsBqQyLn4Lv7pfrV&si=BmmThlhDmIVf2ATX",
+        emoji: "🧑‍💻"
+      },
+      {
+        title: "Lach- und Sachgeschichten",
+        category: "Die Maus",
+        desc: "Typisch Maus: lustige, knifflige und kluge Videos zu allen erdenklichen Alltagsfragen.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU717yTfoVAMPc9HV08YsuQgc&si=qoyURK6sle5oKWtx",
+        emoji: "😂"
+      },
+      {
+        title: "Rico und Oscar",
+        category: "Die Maus",
+        desc: "Kinderbuchkrimi zum Mitlachen, -fiebern und Staunen.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU72oQkOyGcPtZyNBH9BlZ2w9&si=HVz0RCED_rflcO4p",
+        emoji: "🔍"
+      },
+      {
+        title: "Baustellen & Bauwerke",
+        category: "Die Maus",
+        desc: "Vom Fundament bis zum Hochhaus – wie entsteht ein Bauwerk? Die Maus zeigt's.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU720PRbMtKoPu9j-Dcn7LQPm&si=Js6jQ-nbn_0zC2wz",
+        emoji: "🏗️"
+      },
+      {
+        title: "Mausspots",
+        category: "Die Maus",
+        desc: "Witzige Zwischenclips für kleine Maus-Pausen.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU716f41tog1HfB_0Rc0rarJh&si=wByEhHpo5Z5ZPAV0",
+        emoji: "🎬"
+      },
+      {
+        title: "Maus Blick",
+        category: "Die Maus",
+        desc: "Die Maus öffnet den Blick aufs Detail, Unerwartetes und Kurioses.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU73GTub-0VzFtYc3z7HIMbsB&si=jl83B6BOXjCuucfy",
+        emoji: "👁️"
+      },
+      {
+        title: "Sportgeschichten",
+        category: "Die Maus",
+        desc: "Alle Lieblingssportarten anschaulich, kindgerecht und witzig erkundet.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU73ETdZDXAin-48eE5oUil2-&si=SiQuyjNYY0Jpt4kX",
+        emoji: "⚽"
+      },
+      {
+        title: "Umwelt-Geschichten",
+        category: "Die Maus",
+        desc: "Wie können Kinder unsere Erde schützen? Die Maus gibt Impulse für Nachhaltigkeit.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU70lXFybDmsMbutEpklNl4p0&si=uvM1OgkuJ9DiUYwZ",
+        emoji: "🌱"
+      },
+      {
+        title: "Weltall-Geschichten",
+        category: "Die Maus",
+        desc: "Von Sternen, Planeten & Kosmos – die Maus nimmt alle Forscher:innen auf Weltraumreise mit.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU72-SYM_kWM9Phw_3lOTa840&si=MOqZNbEX3X_iS647",
+        emoji: "🌌"
+      },
+      // Es war einmal etc.
+      {
+        title: "Es war einmal das Leben",
+        category: "Wissen & Gesellschaft",
+        desc: "Der Körper als Wunderwelt – die Reise beginnt: Zellen, Gehirn & Herz kindgerecht als Abenteuer erzählt.",
+        url: "https://youtube.com/playlist?list=PLOhUgEI-xqcmKVySpR5e2qAS_-veYe5uq&si=fya8mPWdSVSQSabe",
+        emoji: "🩺"
+      },
+      {
+        title: "Es war einmal der Mensch",
+        category: "Wissen & Geschichte",
+        desc: "Die spannendsten Abenteuer der Menschengeschichte: Steinzeit, Antike, Mittelalter bis heute.",
+        url: "https://youtube.com/playlist?list=PLTPZkpJtZujr-VpUBZbAApESngrNaVb64&si=8mNiDxjJfbmf9rRK",
+        emoji: "⏳"
+      },
+      {
+        title: "Es war einmal ...Playlist",
+        category: "Wissen & Geschichte",
+        desc: "Großartige Wissensabenteuer! Spezialfolgen & best-of aus „Es war einmal“.",
+        url: "https://youtube.com/playlist?list=PLRxZ0r9GW0OTZ6yKKdrn34iez_On7mQn4&si=t12xvrKTJ93zlSjD",
+        emoji: "🧑‍🚀"
+      },
+    ];
+
+    // Zusatz: Eigene Links via localStorage
+    function getFavorites() {
+      let favs = localStorage.getItem('favoriteLinks');
+      return favs ? JSON.parse(favs) : [];
+    }
+    function setFavorites(arr) {
+      localStorage.setItem('favoriteLinks', JSON.stringify(arr));
+    }
+
+    // Filter-Logik + Suchfunktion + Favoriten
+    let activeFilter = "Alle";
+    let search = "";
+
+    function displaySeries() {
+      let favs = getFavorites();
+      let all = [...serien, ...favs];
+      let filter = s => activeFilter === "Alle" || (activeFilter === "Favoriten"
+        ? favs.find(f => f.url === s.url)
+        : (s.category||"").toLowerCase().replace("&", "und").includes(activeFilter.toLowerCase()))
+      && (!search || s.title.toLowerCase().includes(search) || (s.desc || "").toLowerCase().includes(search));
+      let list = all.filter(filter);
+      let out = "";
+
+      list.forEach(s => {
+        // Kategorie-Stil
+        let catClass = "";
+        let catLabel = s.category||"";
+        if (/maus/i.test(catLabel)) catClass="cat-maus";
+        else if (/kreativ/i.test(catLabel)) catClass="cat-kreativ";
+        else if (/geschichte/i.test(catLabel)) catClass="cat-geschichte";
+        else catClass="cat-wissen";
+        let emoji = s.emoji ? `<span class="emoji">${s.emoji}</span>` : "";
+        out += `
+        <div class="series-card">
+          <div class="series-title">${emoji}${s.title}</div>
+          <div class="series-category ${catClass}">${catLabel}</div>
+          <div class="series-desc">${s.desc||""}</div>
+          <a class="serien-link" href="${s.url}" target="_blank" rel="noopener">Auf YouTube ansehen</a>
+        </div>`;
+      });
+
+      document.getElementById("seriesList").innerHTML = (out || `<div style="padding:2em 0;font-size:1.11em;text-align:center;">Keine Serien gefunden.</div>`);
+    }
+
+    // Filter Buttons events
+    document.querySelectorAll(".filter-btn").forEach(btn=>{
+      btn.onclick = e => {
+        document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.filter;
+        displaySeries();
+      }
+    });
+
+    // Suche
+    document.getElementById("searchInput").addEventListener('input', e=>{
+      search = e.target.value.toLowerCase();
+      displaySeries();
+    });
+
+    // Zufall
+    function randomSerie() {
+      let favs = getFavorites();
+      let all = [...serien, ...favs].filter(s=>{
+        let filter = activeFilter === "Alle" || (activeFilter === "Favoriten"
+          ? favs.find(f => f.url === s.url)
+          : (s.category||"").toLowerCase().includes(activeFilter.toLowerCase()));
+        return filter && (!search || s.title.toLowerCase().includes(search) || (s.desc || "").toLowerCase().includes(search));
+      });
+      if (!all.length) return;
+      let index = Math.floor(Math.random() * all.length);
+      window.open(all[index].url, "_blank");
+    }
+
+    // Modal-Handling
+    function openAddModal() {
+      document.getElementById("addModal").classList.add('active');
+      setTimeout(()=>document.querySelector("#addModal input[name=title]").focus(),120);
+    }
+    function closeAddModal() {
+      document.getElementById("addModal").classList.remove('active');
+      document.getElementById("addForm").reset();
+    }
+    document.getElementById("addModal").addEventListener('click', e=>{
+      if (e.target === e.currentTarget) closeAddModal();
+    });
+
+    // Hinzufügen eigener Links
+    document.getElementById("addForm").addEventListener('submit', function(e){
+      e.preventDefault();
+      const title = this.title.value.trim();
+      const url = this.url.value.trim();
+      const category = this.category.value;
+      const desc = this.desc.value.trim();
+      const emoji = this.emoji.value.trim();
+      if(!title || !url || !category) return;
+      let favs = getFavorites();
+      if(!favs.some(s=>s.url==url)){
+        favs.push({title, url, category, desc, emoji});
+        setFavorites(favs);
+      }
+      closeAddModal();
+      if(activeFilter==="Favoriten") displaySeries();
+      else {
+        document.querySelector("[data-filter='Favoriten']").click();
+      }
+    });
+
+    // Direkt beim Start anzeigen
+    displaySeries();
+  </script>
+</body>
+</html>
