@@ -6,11 +6,11 @@
   <title>Lern-Oase – Wissensserien für Kids</title>
   <style>
     :root {
-      --bg: #212c7ce0;
-      --bg-gradient: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
-      --primary: #078c217e;
+      --bg: #172f0c;
+      --bg-gradient: linear-gradient(135deg,  	#49603bd0 0%,   #458c4b 100%);
+      --primary: #04932a87;
       --secondary: #ff006e;
-      --accent: #44d78e;
+      --accent: #c9df8a;
       --category-wissen: #0e573f83;
       --category-geschichte: #c5820ea3;
       --category-kreativ: #ec4899;
@@ -19,8 +19,8 @@
       --card: rgba(255, 255, 255, 0.05);
       --card-hover: rgba(255, 255, 255, 0.08);
       --card-border: rgba(255, 255, 255, 0.1);
-      --text: #e0e7ff;
-      --text-muted: #94a3b8;
+      --text:  	#c9df8a;
+      --text-muted: #f0f7da;
       --filter-bg: rgba(255, 255, 255, 0.1);
       --filter-active: var(--primary);
       --input-bg: rgba(255, 255, 255, 0.08);
@@ -140,7 +140,7 @@
       max-width: 900px;
       position: sticky;
       top: 0;
-      background: rgba(10, 14, 39, 0.8);
+      background: rgba(0, 63, 26, 0.642);
       backdrop-filter: blur(20px);
       z-index: 100;
       border-radius: 0 0 var(--radius) var(--radius);
@@ -342,31 +342,37 @@
 
     .cat-wissen {
       background: rgba(16, 185, 129, 0.2);
-      color: #10b981;
+      color: #021901cf;
       border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
     .cat-geschichte {
       background: rgba(245, 158, 11, 0.2);
-      color: #f59e0b;
+      color: #874c00f2;
       border: 1px solid rgba(245, 158, 11, 0.3);
     }
 
     .cat-kreativ {
       background: rgba(236, 72, 153, 0.2);
-      color: #ec4899;
+      color: #90094de7;
       border: 1px solid rgba(236, 72, 153, 0.3);
     }
 
     .cat-maus {
       background: rgba(55, 19, 174, 0.2);
-      color: #5c66f6;
+      color: #45309bfa;
       border: 1px solid rgba(108, 80, 250, 0.3);
     }
 
     .cat-gesellschaft {
       background: rgba(6, 182, 212, 0.2);
-      color: #06b6d4;
+      color: #0617d4ee;
+      border: 1px solid rgba(6, 182, 212, 0.3);
+    }
+
+    .cat-löwenzahn {
+      background: rgb(112, 105, 2);
+      color: #d0d406f4;
       border: 1px solid rgba(6, 182, 212, 0.3);
     }
 
@@ -557,7 +563,7 @@
 
     .submit-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+      box-shadow: 0 10px 30px rgba(4, 218, 8, 0.5);
     }
 
     .cancel-btn {
@@ -658,6 +664,7 @@
       <button class="filter-btn" data-filter="Gesellschaft">🌍 Gesellschaft</button>
       <button class="filter-btn" data-filter="Kreativ">🎨 Kreativ</button>
       <button class="filter-btn" data-filter="Die Maus">🐭 Die Maus</button>
+      <button class="filter-btn" data-filter="Löwenzahn">🌻 Löwenzahn</button>
       <button class="filter-btn" data-filter="Favoriten">⭐ Favoriten</button>
     </div>
 
@@ -706,6 +713,7 @@
             <option value="Gesellschaft">🌍 Gesellschaft</option>
             <option value="Kreativ">🎨 Kreativ</option>
             <option value="Die Maus">🐭 Die Maus</option>
+            <option value="Löwenzahn">🌻 Löwenzahn</option>
           </select>
         </div>
 
@@ -739,6 +747,31 @@
         emoji: "🤯"
       },
       {
+        title: "Es war einmal das Leben",
+        category: "Wissen",
+        desc: "Der menschliche Körper als Abenteuer – Zellen, Organe und Systeme werden zu spannenden Geschichten.",
+        url: "https://youtube.com/playlist?list=PLOhUgEI-xqcmKVySpR5e2qAS_-veYe5uq&si=fya8mPWdSVSQSabe",
+        emoji: "🫀"
+      },
+      
+      {
+        title: "Kurzgesagt",
+        category: "Wissen",
+        desc: "Dinge erklärt – Kurzgesagt ist ein Wissenschaftskanal der komplexe Themen aus Raumfahrt, Physik, Biologie, Politik, und Philosophie einfach und verständlich in animierter Form erklärt.",
+        url: "https://www.youtube.com/@KurzgesagtDE/videos",
+        emoji: "🧫"
+      },
+
+      {
+        title: "Lach- und Sachgeschichten",
+        category: "Die Maus",
+        desc: "Die perfekte Mischung aus Unterhaltung und Wissen – typisch Maus!",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU717yTfoVAMPc9HV08YsuQgc&si=qoyURK6sle5oKWtx",
+        emoji: "😄"
+      },
+
+
+      {
         title: "Wissenschaftsdokus (Arte)",
         category: "Wissen",
         desc: "Faszinierende Wissenschaftsdokumentationen, die komplexe Themen verständlich und spannend aufbereiten.",
@@ -766,34 +799,7 @@
         url: "https://youtube.com/playlist?list=PL6enpR8MLihFE2GLZeNVapgeGskPBwvff&si=7csXXvGd5B13cVze",
         emoji: "🌻"
       },
-      {
-        title: "Löwenzahn: Staffel 7-17",
-        category: "Wissen",
-        desc: "Weitere spannende Folgen mit Experimenten und Entdeckungen aus dem Bauwagen.",
-        url: "https://youtube.com/playlist?list=PL6enpR8MLihFEirUOxw-2zaorttFX6FtH&si=V3ZGHLI47rZrs9sa",
-        emoji: "🔍"
-      },
-      {
-        title: "Löwenzahn: Staffel 18-25",
-        category: "Wissen",
-        desc: "Moderne Abenteuer mit aktuellen Themen – Umwelt, Technik und Alltag kindgerecht erklärt.",
-        url: "https://youtube.com/playlist?list=PL6enpR8MLihFtKNjGYf_1_wNxE0Eh4q1y&si=7Hp_EApuqfWPAZGa",
-        emoji: "🚀"
-      },
-      {
-        title: "Löwenzahn: Staffel 26-33",
-        category: "Wissen",
-        desc: "Wissenschaft zum Anfassen – neue Folgen voller Experimente und Aha-Momente.",
-        url: "https://youtube.com/playlist?list=PL6enpR8MLihHt3HY7bSR0x1qeVI9KSZ-9&si=EGRThWdRmQfB9tU7",
-        emoji: "🧪"
-      },
-      {
-        title: "Löwenzahn: Staffel 33-35",
-        category: "Wissen",
-        desc: "Die neuesten Löwenzahn-Abenteuer mit spannenden Themen aus Wissenschaft und Alltag.",
-        url: "https://youtube.com/playlist?list=PL6enpR8MLihHEJTtI93jCkR398spLg44I&si=r83PCYCDgJYbiiao",
-        emoji: "🌟"
-      },
+
       {
         title: "Mittendrin",
         category: "Wissen",
@@ -822,13 +828,7 @@
         url: "https://youtube.com/playlist?list=PL6W8LFD__Sajr-uJKUyxrMH-7UOUhdykC&si=rkuRUK7tJiROf4Kw",
         emoji: "🤓"
       },
-      {
-        title: "Es war einmal das Leben",
-        category: "Wissen",
-        desc: "Der menschliche Körper als Abenteuer – Zellen, Organe und Systeme werden zu spannenden Geschichten.",
-        url: "https://youtube.com/playlist?list=PLOhUgEI-xqcmKVySpR5e2qAS_-veYe5uq&si=fya8mPWdSVSQSabe",
-        emoji: "🫀"
-      },
+
       // GESCHICHTE
       {
         title: "Stimmt das...?",
@@ -881,6 +881,45 @@
         url: "https://youtube.com/playlist?list=PLbPO-7IrXtXWZeVPvEFopX_qFghOKTY8e&si=FCA_X0XW4JWPTPPy",
         emoji: "✨"
       },
+
+      // LÖWENZAHN
+            {
+        title: "Löwenzahn: Staffel 1-6",
+        category: "Löwenzahn",
+        desc: "Fritz Fuchs erforscht Natur, Technik und Wissenschaft – Abenteuer und Wissen für die ganze Familie.",
+        url: "https://youtube.com/playlist?list=PL6enpR8MLihFE2GLZeNVapgeGskPBwvff&si=7csXXvGd5B13cVze",
+        emoji: "🌻"
+      },
+      {
+        title: "Löwenzahn: Staffel 7-17",
+        category: "Löwenzahn",
+        desc: "Weitere spannende Folgen mit Experimenten und Entdeckungen aus dem Bauwagen.",
+        url: "https://youtube.com/playlist?list=PL6enpR8MLihFEirUOxw-2zaorttFX6FtH&si=V3ZGHLI47rZrs9sa",
+        emoji: "🔍"
+      },
+      {
+        title: "Löwenzahn: Staffel 18-25",
+        category: "Löwenzahn",
+        desc: "Moderne Abenteuer mit aktuellen Themen – Umwelt, Technik und Alltag kindgerecht erklärt.",
+        url: "https://youtube.com/playlist?list=PL6enpR8MLihFtKNjGYf_1_wNxE0Eh4q1y&si=7Hp_EApuqfWPAZGa",
+        emoji: "🚀"
+      },
+      {
+        title: "Löwenzahn: Staffel 26-33",
+        category: "Löwenzahn",
+        desc: "Wissenschaft zum Anfassen – neue Folgen voller Experimente und Aha-Momente.",
+        url: "https://youtube.com/playlist?list=PL6enpR8MLihHt3HY7bSR0x1qeVI9KSZ-9&si=EGRThWdRmQfB9tU7",
+        emoji: "🧪"
+      },
+      {
+        title: "Löwenzahn: Staffel 33-35",
+        category: "Wissen",
+        desc: "Die neuesten Löwenzahn-Abenteuer mit spannenden Themen aus Wissenschaft und Alltag.",
+        url: "https://youtube.com/playlist?list=PL6enpR8MLihHEJTtI93jCkR398spLg44I&si=r83PCYCDgJYbiiao",
+        emoji: "🌟"
+      },
+
+
       // DIE MAUS
       {
         title: "Wie wird ein Feuerwehrauto gebaut?",
@@ -1045,6 +1084,7 @@
       if (normalized.includes('kreativ')) return 'cat-kreativ';
       if (normalized.includes('geschichte')) return 'cat-geschichte';
       if (normalized.includes('gesellschaft')) return 'cat-gesellschaft';
+      if (normalized.includes('löwenzahn')) return 'cat-löwenzahn';
       return 'cat-wissen';
     }
 
