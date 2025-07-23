@@ -1,0 +1,2721 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#04932a87">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Lern-Oase - Entdecke faszinierende Wissens- und Kreativserien für neugierige Köpfe">
+
+  <title>Lern-Oase – Wissensserien für Kids</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167x167.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+
+  <style>
+    :root {
+      --bg: #172f0c;
+      --bg-gradient: linear-gradient(135deg, #49603bd0 0%, #458c4b 100%);
+      --primary: #a6fdbd87;
+      --secondary: #ff006e;
+      --accent: #c9df8a;
+      --category-wissen: #0e573f83;
+      --category-geschichte: #c5820ea3;
+      --category-kreativ: #ec4899;
+      --category-maus: #2f3192ea;
+      --category-gesellschaft: #065fd4ba;
+      --category-loewenzahn: #806205;
+      --card: rgba(255, 255, 255, 0.05);
+      --card-hover: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --text: #c9df8a;
+      --text-muted: #f0f7da;
+      --filter-bg: rgba(255, 255, 255, 0.1);
+      --filter-active: var(--primary);
+      --input-bg: rgba(255, 255, 255, 0.08);
+      --shadow-glow: 0 0 40px rgba(0, 255, 136, 0.3);
+      --radius: 16px;
+      --episode-bg: rgba(0, 0, 0, 0.2);
+      --episode-hover: rgba(0, 255, 136, 0.1);
+      --install-bg: rgba(4, 147, 42, 0.95);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.8; }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(0);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+    }
+
+    /* PWA Install Banner */
+    .install-banner {
+      position: fixed;
+      bottom: -100px;
+      left: 0;
+      right: 0;
+      background: var(--install-bg);
+      backdrop-filter: blur(20px);
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: transform 0.3s ease-out;
+      z-index: 1000;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .install-banner.show {
+      transform: translateY(-100px);
+    }
+
+    .install-banner-content {
+      flex: 1;
+    }
+
+    .install-banner h3 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: white;
+    }
+
+    .install-banner p {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .install-btn, .install-dismiss {
+      padding: 0.75rem 1.5rem;
+      border-radius: 100px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1rem;
+    }
+
+    .install-btn {
+      background: white;
+      color: var(--primary);
+    }
+
+    .install-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+    }
+
+    .install-dismiss {
+      background: transparent;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .install-dismiss:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Offline Indicator */
+    .offline-indicator {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #ff6b6b;
+      color: white;
+      padding: 0.5rem;
+      text-align: center;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transform: translateY(-100%);
+      transition: transform 0.3s;
+      z-index: 1100;
+    }
+
+    .offline-indicator.show {
+      transform: translateY(0);
+    }
+
+    /* Page Transitions */
+    .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      min-height: 100vh;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease-out;
+    }
+
+    .page.active {
+      opacity: 1;
+      visibility: visible;
+      position: relative;
+    }
+
+    /* Header Styles */
+    header {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 3rem 1.5rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+      opacity: 0.05;
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    header h1 {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    header p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.8;
+      font-weight: 400;
+    }
+
+    /* Navigation */
+    .back-btn {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 100;
+      background: var(--filter-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 0.75rem 1.5rem;
+      border-radius: 100px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s;
+      text-decoration: none;
+      opacity: 0;
+      visibility: hidden;
+      font-size: 1rem;
+    }
+
+    .back-btn.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .back-btn:hover {
+      background: var(--filter-active);
+      transform: translateX(-5px);
+    }
+
+    /* Filters */
+    .filters {
+      display: flex;
+      gap: 0.75rem;
+      margin: 2rem auto;
+      padding: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 1000px;
+      position: sticky;
+      top: 0;
+      background: rgba(0, 63, 26, 0.642);
+      backdrop-filter: blur(20px);
+      z-index: 90;
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+
+    .filter-btn {
+      background: var(--filter-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      padding: 0.875rem 1.75rem;
+      border-radius: 100px;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .filter-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: var(--filter-active);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .filter-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+    }
+
+    .filter-btn.active {
+      background: var(--filter-active);
+      color: #000;
+      font-weight: 700;
+    }
+
+    .filter-btn.active::before {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Add Category Button */
+    .add-category-btn {
+      background: var(--secondary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 100px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-left: auto;
+    }
+
+    .add-category-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(255, 0, 110, 0.4);
+    }
+
+    /* Search */
+    .search-container {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .search-wrapper {
+      position: relative;
+      display: flex;
+      gap: 0.75rem;
+      background: var(--input-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: 100px;
+      padding: 0.5rem;
+      transition: all 0.3s;
+    }
+
+    .search-wrapper:focus-within {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1.25rem;
+    }
+
+    .search-wrapper input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1rem;
+      padding: 0.875rem 1rem 0.875rem 3rem;
+      outline: none;
+    }
+
+    .search-wrapper input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .random-btn {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+      border: none;
+      color: white;
+      padding: 0.875rem 1.75rem;
+      border-radius: 100px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+      font-size: 1rem;
+    }
+
+    .random-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(255, 0, 110, 0.4);
+    }
+
+    /* Series Grid */
+    .series-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin: 3rem auto;
+      max-width: 1200px;
+      padding: 0 1.5rem 4rem;
+    }
+
+    @media (max-width: 768px) {
+      .series-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .series-card {
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      animation: slideIn 0.6s ease-out forwards;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .series-card:nth-child(n) {
+      animation-delay: calc(n * 0.05s);
+    }
+
+    .series-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .series-card:hover {
+      background: var(--card-hover);
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), var(--shadow-glow);
+    }
+
+    .series-card:hover::before {
+      opacity: 1;
+    }
+
+    .series-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .series-title {
+      font-size: 1.375rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+      line-height: 1.4;
+    }
+
+    .series-emoji {
+      font-size: 1.75rem;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .series-category {
+      font-size: 0.875rem;
+      padding: 0.5rem 1rem;
+      border-radius: 100px;
+      font-weight: 600;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Dynamic category colors */
+    .series-category[data-category] {
+      background: var(--category-bg, rgba(255, 255, 255, 0.1));
+      color: var(--category-color, var(--text));
+      border: 1px solid var(--category-border, rgba(255, 255, 255, 0.2));
+    }
+
+    .cat-wissen {
+      background: rgba(16, 185, 129, 0.2);
+      color: #021901cf;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .cat-geschichte {
+      background: rgba(245, 158, 11, 0.2);
+      color: #874c00f2;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .cat-kreativ {
+      background: rgba(236, 72, 153, 0.2);
+      color: #90094de7;
+      border: 1px solid rgba(236, 72, 153, 0.3);
+    }
+
+    .cat-maus {
+      background: rgba(55, 19, 174, 0.2);
+      color: #45309bfa;
+      border: 1px solid rgba(108, 80, 250, 0.3);
+    }
+
+    .cat-gesellschaft {
+      background: rgba(6, 182, 212, 0.2);
+      color: #0617d4ee;
+      border: 1px solid rgba(6, 182, 212, 0.3);
+    }
+
+    .cat-loewenzahn {
+      background: rgba(128, 98, 5, 0.2);
+      color: #d0d406f4;
+      border: 1px solid rgba(208, 212, 6, 0.3);
+    }
+
+    .series-desc {
+      font-size: 1.0625rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      font-weight: 400;
+    }
+
+    .series-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .episode-count {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .youtube-btn, .view-series-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+      color: white;
+      text-decoration: none;
+      padding: 0.875rem 1.5rem;
+      border-radius: 100px;
+      font-weight: 600;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      margin-right: 0.75rem;
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .view-series-btn {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: #000;
+    }
+
+    .youtube-btn::before,
+    .view-series-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .youtube-btn:hover,
+    .view-series-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(255, 0, 0, 0.4);
+    }
+
+    .view-series-btn:hover {
+      box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+    }
+
+    .youtube-btn:hover::before,
+    .view-series-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    /* Series Detail Page */
+    .series-detail {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .detail-header {
+      background: var(--card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      animation: slideInLeft 0.6s ease-out;
+    }
+
+    .detail-title {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .detail-title h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+    }
+
+    .detail-title .series-emoji {
+      font-size: 3rem;
+    }
+
+    .detail-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .info-section {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .info-section h3 {
+      font-size: 1.375rem;
+      margin-bottom: 0.75rem;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .info-section p {
+      color: var(--text-muted);
+      line-height: 1.8;
+      font-size: 1.0625rem;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    /* Episodes Section */
+    .episodes-section {
+      margin-top: 3rem;
+    }
+
+    .episodes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .episodes-header h3 {
+      font-size: 1.875rem;
+      font-weight: 700;
+    }
+
+    .episode-search {
+      position: relative;
+      max-width: 300px;
+    }
+
+    .episode-search input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 100px;
+      padding: 0.875rem 1rem 0.875rem 2.75rem;
+      color: var(--text);
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    .episode-search input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+    }
+
+    .episode-search .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.125rem;
+      color: var(--text-muted);
+    }
+
+    .episodes-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .episode-card {
+      background: var(--episode-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      position: relative;
+      overflow: hidden;
+      animation: slideIn 0.4s ease-out forwards;
+      opacity: 0;
+    }
+
+    .episode-card:nth-child(n) {
+      animation-delay: calc(n * 0.03s);
+    }
+
+    .episode-card::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: var(--primary);
+      opacity: 0.3;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .episode-card.ripple::after {
+      animation: ripple 0.6s ease-out;
+    }
+
+    .episode-card:hover {
+      background: var(--episode-hover);
+      transform: translateX(5px);
+      border-color: var(--primary);
+    }
+
+    .episode-number {
+      font-size: 0.9375rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .episode-title {
+      font-size: 1.1875rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      line-height: 1.5;
+    }
+
+    .episode-play-icon {
+      font-size: 1.125rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .episode-card:hover .episode-play-icon {
+      opacity: 1;
+    }
+
+    .episodes-notice {
+      background: var(--filter-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-top: 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .episodes-notice a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .episodes-notice a:hover {
+      text-decoration: underline;
+    }
+
+    /* Modal Styles */
+    .add-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      border: none;
+      border-radius: 50%;
+      color: #000;
+      font-size: 2rem;
+      font-weight: 300;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+      transition: all 0.3s;
+      z-index: 90;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .add-btn:hover {
+      transform: scale(1.1) rotate(90deg);
+      box-shadow: 0 15px 40px rgba(0, 255, 136, 0.6);
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      display: none;
+      place-items: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+
+    .modal.active {
+      display: grid;
+    }
+
+    .modal-content {
+      background: var(--bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 2rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .modal-close:hover {
+      background: var(--filter-bg);
+      transform: rotate(90deg);
+    }
+
+    .modal-content h2 {
+      font-size: 1.625rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.625rem;
+      color: var(--text);
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 0.875rem 1rem;
+      color: var(--text);
+      font-size: 1rem;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .modal-actions button {
+      flex: 1;
+      padding: 0.875rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+    }
+
+    .submit-btn {
+      background: var(--primary);
+      color: #000;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(4, 218, 8, 0.5);
+    }
+
+    .cancel-btn {
+      background: var(--filter-bg);
+      color: var(--text);
+    }
+
+    .cancel-btn:hover {
+      background: var(--card-hover);
+    }
+
+    /* Episodes Form */
+    .episodes-input {
+      margin-top: 1rem;
+    }
+
+    .episode-input-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .episode-input-row input {
+      flex: 1;
+    }
+
+    .episode-input-row button {
+      background: var(--filter-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .episode-input-row button:hover {
+      background: var(--card-hover);
+      border-color: var(--primary);
+    }
+
+    .add-episode-btn {
+      background: var(--filter-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 100%;
+      margin-top: 0.5rem;
+      font-weight: 500;
+    }
+
+    .add-episode-btn:hover {
+      background: var(--primary);
+      color: #000;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-muted);
+      font-size: 1.25rem;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    /* Custom Categories */
+    .custom-category {
+      position: relative;
+    }
+
+    .custom-category .delete-category {
+      position: absolute;
+      right: -8px;
+      top: -8px;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .custom-category:hover .delete-category {
+      display: flex;
+    }
+
+    /* Color Picker */
+    .color-picker-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .color-option {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+
+    .color-option.selected {
+      border-color: var(--text);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 640px) {
+      body {
+        font-size: 15px;
+      }
+
+      header h1 {
+        font-size: 2rem;
+      }
+
+      header p {
+        font-size: 1.125rem;
+      }
+
+      .filters {
+        padding: 0.75rem;
+        gap: 0.5rem;
+      }
+
+      .filter-btn {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.9375rem;
+      }
+
+      .add-category-btn {
+        font-size: 0.8125rem;
+        padding: 0.375rem 0.75rem;
+      }
+
+      .search-wrapper {
+        flex-direction: column;
+        border-radius: var(--radius);
+        padding: 0.75rem;
+      }
+
+      .search-wrapper input {
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+      }
+
+      .search-icon {
+        position: static;
+        transform: none;
+        margin-bottom: 0.5rem;
+      }
+
+      .random-btn {
+        width: 100%;
+      }
+
+      .series-title {
+        font-size: 1.1875rem;
+      }
+
+      .series-desc {
+        font-size: 1rem;
+      }
+
+      .detail-title h2 {
+        font-size: 1.75rem;
+      }
+
+      .episodes-header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .episode-search {
+        max-width: 100%;
+      }
+
+      .episode-title {
+        font-size: 1.0625rem;
+      }
+
+      .install-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+      }
+
+      .install-banner-buttons {
+        display: flex;
+        gap: 0.5rem;
+        width: 100%;
+      }
+
+      .install-btn, .install-dismiss {
+        flex: 1;
+      }
+    }
+
+    /* Utility Classes */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Scrollbar Styling */
+    ::selection {
+      background: var(--primary);
+      color: #000;
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--filter-bg);
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid var(--text-muted);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Toast Notifications */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--primary);
+      color: var(--text);
+      padding: 1rem 2rem;
+      border-radius: 100px;
+      font-weight: 600;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+      z-index: 1100;
+      font-size: 1rem;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* PWA Update Banner */
+    .update-banner {
+      position: fixed;
+      bottom: -100px;
+      left: 0;
+      right: 0;
+      background: var(--primary);
+      color: #000;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: transform 0.3s ease-out;
+      z-index: 1000;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .update-banner.show {
+      transform: translateY(-100px);
+    }
+
+    .update-banner button {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 100px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Offline Indicator -->
+    <div class="offline-indicator" id="offlineIndicator">
+      📡 Offline-Modus - Neue Inhalte werden bei Internetverbindung synchronisiert
+    </div>
+
+    <!-- Install Banner -->
+    <div class="install-banner" id="installBanner">
+      <div class="install-banner-content">
+        <h3>Lern-Oase installieren</h3>
+        <p>Füge die App zum Homescreen hinzu für schnellen Zugriff!</p>
+      </div>
+      <div class="install-banner-buttons">
+        <button class="install-btn" onclick="installApp()">Installieren</button>
+        <button class="install-dismiss" onclick="dismissInstall()">Später</button>
+      </div>
+    </div>
+
+    <!-- Update Banner -->
+    <div class="update-banner" id="updateBanner">
+      <span>Ein Update ist verfügbar!</span>
+      <button onclick="updateApp()">Aktualisieren</button>
+    </div>
+
+    <!-- Back Button -->
+    <a href="#" class="back-btn" id="backBtn" onclick="showOverview()">
+      <span>←</span>
+      <span>Zurück zur Übersicht</span>
+    </a>
+
+    <!-- Overview Page -->
+    <div class="page active" id="overviewPage">
+      <header>
+        <h1>Lern-Oase 🌱</h1>
+        <p>
+          Entdecke faszinierende Wissens- und Kreativserien für neugierige Köpfe.<br>
+          Tauche ein in die Welt des Lernens und lass dich inspirieren!
+        </p>
+      </header>
+
+      <div class="filters" id="filtersContainer">
+        <button class="filter-btn active" data-filter="Alle">🌈 Alle</button>
+        <button class="filter-btn" data-filter="Wissen">🧠 Wissen</button>
+        <button class="filter-btn" data-filter="Geschichte">📜 Geschichte</button>
+        <button class="filter-btn" data-filter="Gesellschaft">🌍 Gesellschaft</button>
+        <button class="filter-btn" data-filter="Kreativ">🎨 Kreativ</button>
+        <button class="filter-btn" data-filter="Die Maus">🐭 Die Maus</button>
+        <button class="filter-btn" data-filter="Löwenzahn">🌻 Löwenzahn</button>
+        <button class="filter-btn" data-filter="Favoriten">⭐ Favoriten</button>
+        <button class="add-category-btn" onclick="openCategoryModal()">
+          <span>+</span>
+          <span>Kategorie</span>
+        </button>
+      </div>
+
+      <div class="search-container">
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Wonach suchst du heute?"
+            autocomplete="off"
+          >
+          <button class="random-btn" onclick="randomSerie()">
+            <span>🎲 Zufall</span>
+          </button>
+        </div>
+      </div>
+
+      <main class="series-list" id="seriesList"></main>
+    </div>
+
+    <!-- Series Detail Page -->
+    <div class="page" id="detailPage">
+      <div class="series-detail" id="seriesDetail"></div>
+    </div>
+
+    <!-- Add Button -->
+    <button class="add-btn" onclick="openAddModal()" title="Serie hinzufügen">
+      +
+    </button>
+
+    <!-- Add Series Modal -->
+    <div class="modal" id="addModal">
+      <form id="addForm" class="modal-content">
+        <button type="button" class="modal-close" onclick="closeAddModal()">×</button>
+        <h2>Neue Serie hinzufügen</h2>
+
+        <div class="form-group">
+          <label>Titel *</label>
+          <input type="text" name="title" required maxlength="70" placeholder="Name der Serie">
+        </div>
+
+        <div class="form-group">
+          <label>YouTube Playlist URL *</label>
+          <input type="url" name="url" required placeholder="https://youtube.com/playlist?list=...">
+        </div>
+
+        <div class="form-group">
+          <label>Kategorie *</label>
+          <select name="category" id="categorySelect" required>
+            <option value="">Kategorie wählen</option>
+            <option value="Wissen">🧠 Wissen</option>
+            <option value="Geschichte">📜 Geschichte</option>
+            <option value="Gesellschaft">🌍 Gesellschaft</option>
+            <option value="Kreativ">🎨 Kreativ</option>
+            <option value="Die Maus">🐭 Die Maus</option>
+            <option value="Löwenzahn">🌻 Löwenzahn</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Beschreibung</label>
+          <textarea name="desc" maxlength="300" placeholder="Ausführliche Beschreibung der Serie (optional)"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Künstler/Ersteller</label>
+          <input type="text" name="creator" maxlength="100" placeholder="z.B. Arte, WDR, Fritz Fuchs (optional)">
+        </div>
+
+        <div class="form-group">
+          <label>Emoji</label>
+          <input type="text" name="emoji" maxlength="2" placeholder="🦄 (optional)">
+        </div>
+
+        <div class="form-group">
+          <label>Episoden (optional)</label>
+          <div class="episodes-input" id="episodesInput">
+            <div class="episode-input-row">
+              <input type="text" placeholder="Episodentitel" name="episode_title[]">
+              <input type="url" placeholder="YouTube URL" name="episode_url[]">
+              <button type="button" onclick="removeEpisodeInput(this)">×</button>
+            </div>
+          </div>
+          <button type="button" class="add-episode-btn" onclick="addEpisodeInput()">+ Episode hinzufügen</button>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="submit-btn">Hinzufügen</button>
+          <button type="button" class="cancel-btn" onclick="closeAddModal()">Abbrechen</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div class="modal" id="categoryModal">
+      <form id="categoryForm" class="modal-content">
+        <button type="button" class="modal-close" onclick="closeCategoryModal()">×</button>
+        <h2>Neue Kategorie erstellen</h2>
+
+        <div class="form-group">
+          <label>Kategoriename *</label>
+          <input type="text" name="name" required maxlength="30" placeholder="z.B. Wissenschaft">
+        </div>
+
+        <div class="form-group">
+          <label>Emoji *</label>
+          <input type="text" name="emoji" required maxlength="2" placeholder="🔬">
+        </div>
+
+        <div class="form-group">
+          <label>Farbe wählen *</label>
+          <div class="color-picker-group">
+            <div class="color-option" style="background: #10b981" data-color="#10b981"></div>
+            <div class="color-option" style="background: #f59e0b" data-color="#f59e0b"></div>
+            <div class="color-option" style="background: #ec4899" data-color="#ec4899"></div>
+            <div class="color-option" style="background: #3b82f6" data-color="#3b82f6"></div>
+            <div class="color-option" style="background: #8b5cf6" data-color="#8b5cf6"></div>
+            <div class="color-option" style="background: #06b6d4" data-color="#06b6d4"></div>
+            <div class="color-option" style="background: #ef4444" data-color="#ef4444"></div>
+            <div class="color-option" style="background: #84cc16" data-color="#84cc16"></div>
+          </div>
+          <input type="hidden" name="color" required>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="submit-btn">Erstellen</button>
+          <button type="button" class="cancel-btn" onclick="closeCategoryModal()">Abbrechen</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script>
+    // PWA Variables
+    let deferredPrompt;
+    let newWorker;
+
+    // Erweiterte Serien-Datenbank mit Episoden
+    const defaultSerien = [
+      // WISSEN
+      {
+        title: "Wer nicht fragt, stirbt dumm",
+        category: "Wissen",
+        desc: "Arte beantwortet mit Humor und Wissenschaft die kuriosesten Alltagsfragen – unterhaltsam und lehrreich zugleich.",
+        url: "https://youtube.com/playlist?list=PLlQWnS27jXh9qyYAGcB23Fe0s5UvslNNK&si=lhdLwBEpTP8sL0JI",
+        emoji: "🤯",
+        creator: "Arte",
+        episodes: []
+      },
+      {
+        title: "Es war einmal das Leben",
+        category: "Wissen",
+        desc: "Der menschliche Körper als Abenteuer – Zellen, Organe und Systeme werden zu spannenden Geschichten. Eine klassische Animationsserie, die komplexe biologische Vorgänge kindgerecht erklärt.",
+        url: "https://youtube.com/playlist?list=PLOhUgEI-xqcmKVySpR5e2qAS_-veYe5uq&si=fya8mPWdSVSQSabe",
+        emoji: "🫀",
+        creator: "Procidis",
+        episodes: []
+      },
+      {
+        title: "Kurzgesagt",
+        category: "Wissen",
+        desc: "Dinge erklärt – Kurzgesagt ist ein Wissenschaftskanal der komplexe Themen aus Raumfahrt, Physik, Biologie, Politik, und Philosophie einfach und verständlich in animierter Form erklärt.",
+        url: "https://www.youtube.com/@KurzgesagtDE/videos",
+        emoji: "🧫",
+        creator: "Kurzgesagt – In a Nutshell",
+        episodes: []
+      },
+      {
+        title: "Wissenschaftsdokus (Arte)",
+        category: "Wissen",
+        desc: "Faszinierende Wissenschaftsdokumentationen, die komplexe Themen verständlich und spannend aufbereiten.",
+        url: "https://youtube.com/playlist?list=PLlQWnS27jXh9_eNjMwbuhNhlwEmjQRr-q&si=SQPwmgHTP0bxrBwq",
+        emoji: "🔬",
+        creator: "Arte",
+        episodes: []
+      },
+      {
+        title: "100 Sekunden Physik",
+        category: "Wissen",
+        desc: "Physik in Rekordzeit! Komplexe Phänomene werden in nur 100 Sekunden anschaulich erklärt.",
+        url: "https://youtube.com/@100sekundenphysik?si=0F4hxz4WTsFRxpe7",
+        emoji: "⚛️",
+        creator: "100SekundenPhysik",
+        episodes: []
+      },
+      {
+        title: "42 – Die Antwort auf fast alles",
+        category: "Wissen",
+        desc: "Arte beantwortet die großen Fragen des Lebens mit Wissenschaft, Humor und überraschenden Perspektiven.",
+        url: "https://youtube.com/playlist?list=PLlQWnS27jXh_ofqIJZH7vdOkQ-p_w9gKw&si=4tW-FlrzzLEa_Dtu",
+        emoji: "💡",
+        creator: "Arte",
+        episodes: []
+      },
+
+      // GESCHICHTE
+      {
+        title: "Stimmt das...?",
+        category: "Geschichte",
+        desc: "Mythen und Legenden auf dem Prüfstand – Was ist wahr, was ist erfunden?",
+        url: "https://youtube.com/playlist?list=PLlQWnS27jXh9kBYM2zEbEX8sSKoLPeLA5&si=0EhdXVrehfl7daQL",
+        emoji: "🤔",
+        creator: "Arte",
+        episodes: []
+      },
+      {
+        title: "Es war einmal der Mensch",
+        category: "Geschichte",
+        desc: "Die Geschichte der Menschheit als spannendes Abenteuer – von der Steinzeit bis heute.",
+        url: "https://youtube.com/playlist?list=PLTPZkpJtZujr-VpUBZbAApESngrNaVb64&si=8mNiDxjJfbmf9rRK",
+        emoji: "🏛️",
+        creator: "Procidis",
+        episodes: []
+      },
+
+      // GESELLSCHAFT
+      {
+        title: "Karambolage (Arte)",
+        category: "Gesellschaft",
+        desc: "Deutsch-französische Eigenarten humorvoll erklärt – Kultur, Sprache und Alltagskuriositäten im Vergleich.",
+        url: "https://youtube.com/playlist?list=PLlQWnS27jXh_VPwh6E8J8aB9kppCppbRx&si=5qxVYrC6r4SOyN_X",
+        emoji: "🇩🇪",
+        creator: "Arte",
+        episodes: []
+      },
+
+      // KREATIV
+      {
+        title: "Art Attack",
+        category: "Kreativ",
+        desc: "Der Bastel-Klassiker! Kreative Kunstwerke aus einfachen Materialien – Spaß und Inspiration garantiert.",
+        url: "https://youtube.com/playlist?list=PLUCw4EgWoOGYjqj4OW4asDWkJI4aw3yE6&si=E7VqqG4VHP0I3W-A",
+        emoji: "🎨",
+        creator: "Disney",
+        episodes: []
+      },
+      {
+        title: "Fingertips",
+        category: "Kreativ",
+        desc: "Kreative DIY-Projekte für geschickte Finger – einfach, bunt und voller Ideen.",
+        url: "https://youtube.com/playlist?list=PLEo2W0-ILFOVnW5NQmu9vHYqypKeOREz2&si=ecGn1jlCbSCJTK4u",
+        emoji: "✂️",
+        creator: "Disney",
+        episodes: []
+      },
+
+      // LÖWENZAHN
+      {
+        title: "Löwenzahn: Staffel 1-6",
+        category: "Löwenzahn",
+        desc: "Fritz Fuchs erforscht Natur, Technik und Wissenschaft – Abenteuer und Wissen für die ganze Familie.",
+        url: "https://youtube.com/playlist?list=PL6enpR8MLihFE2GLZeNVapgeGskPBwvff&si=7csXXvGd5B13cVze",
+        emoji: "🌻",
+        creator: "ZDF",
+        episodes: []
+      },
+      {
+        title: "Löwenzahn: Staffel 7-17",
+        category: "Löwenzahn",
+        desc: "Weitere spannende Folgen mit Experimenten und Entdeckungen aus dem Bauwagen.",
+        url: "https://youtube.com/playlist?list=PL6enpR8MLihFEirUOxw-2zaorttFX6FtH&si=V3ZGHLI47rZrs9sa",
+        emoji: "🔍",
+        creator: "ZDF",
+        episodes: []
+      },
+
+      // DIE MAUS
+      {
+        title: "Lach- und Sachgeschichten",
+        category: "Die Maus",
+        desc: "Die perfekte Mischung aus Unterhaltung und Wissen – typisch Maus!",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU717yTfoVAMPc9HV08YsuQgc",
+        emoji: "😄",
+        creator: "WDR",
+        episodes: [
+          { title: "Fußballfloskeln wörtlich genommen", url: "https://www.youtube.com/watch?v=mf72t9B_CEI" },
+          { title: "Mark Forster - ICH FRAG DIE MAUS - Der Song zum 50. Maus-Geburtstag", url: "https://www.youtube.com/watch?v=gpiPIJ7oZ1E" },
+          { title: "Niemals dran gezweifelt", url: "https://www.youtube.com/watch?v=sx63yeJHdDI" },
+          { title: "Fusical", url: "https://www.youtube.com/watch?v=rENWhM-_zzE" },
+          { title: "Ich frag die Maus - digitale Mitmachaktion", url: "https://www.youtube.com/watch?v=mUuAQOpGHV4" },
+          { title: "WM im Liegen", url: "https://www.youtube.com/watch?v=My1CfBX4cyA" },
+          { title: "Der Zauberlehrling - Mit Bülent Ceylan", url: "https://www.youtube.com/watch?v=Ki_yvN6TExw" },
+          { title: "Erika Klose", url: "https://www.youtube.com/watch?v=vnccXmSLKxw" },
+          { title: "Gewichtheben im Liegen", url: "https://www.youtube.com/watch?v=ehwC_kmj-mk" },
+          { title: "Weißt du, wie der Sommer riecht?", url: "https://www.youtube.com/watch?v=ZM-MGRHgdc8" },
+          { title: "Der süße Brei", url: "https://www.youtube.com/watch?v=pAGnDMMdz1o" },
+          { title: "Stabhochsprung im Liegen", url: "https://www.youtube.com/watch?v=-K2nEaNywBM" },
+          { title: "Was denkst du über Freundschaft?", url: "https://www.youtube.com/watch?v=rvvRz7N5Vgw" },
+          { title: "Die Prinzessin auf der Erbse", url: "https://www.youtube.com/watch?v=Wj74dC1sIws" },
+          { title: "Herr von Ribbeck", url: "https://www.youtube.com/watch?v=x4xalkb5H3A" },
+          { title: "In einem Land", url: "https://www.youtube.com/watch?v=UPCA3J5_FyM" },
+          { title: "Halloween", url: "https://www.youtube.com/watch?v=ZG6QImmbHT4" },
+          { title: "Das letzte Schaf (1/4)", url: "https://www.youtube.com/watch?v=R5Sm1qUFhvI" },
+          { title: "Haus vom Nikolaus", url: "https://www.youtube.com/watch?v=kLGjo2efh_k" },
+          { title: "Das letzte Schaf (3/4)", url: "https://www.youtube.com/watch?v=vUMiztaG1gE" },
+          { title: "Das letzte Schaf (4/4)", url: "https://www.youtube.com/watch?v=Aekm2vnOneU" },
+          { title: "Stille Nacht, eilige Nacht", url: "https://www.youtube.com/watch?v=al7BzXBBsBM" },
+          { title: "Gute Nacht, Carola", url: "https://www.youtube.com/watch?v=bP4QXDGn4UM" },
+          { title: "Nulli und Priesemut: Oma Bärs Geheimnis", url: "https://www.youtube.com/watch?v=SqtcidIKKyM" },
+          { title: "Wenn et Trömmelche jeht", url: "https://www.youtube.com/watch?v=YkuwJTBHmo8" },
+          { title: "Er kam mit der Couch", url: "https://www.youtube.com/watch?v=2NvEHbOFtjU" },
+          { title: "Nulli und Priesemut: Die verstopfte Dachrinne", url: "https://www.youtube.com/watch?v=yQqD_l3urc0" },
+          { title: "Jeck Yeah", url: "https://www.youtube.com/watch?v=Gjw-qf913z8" },
+          { title: "Nulli und Priesemut: Freundschaftslied", url: "https://www.youtube.com/watch?v=vdgaDID8C9Q" },
+          { title: "Das letzte Schaf (2/4)", url: "https://www.youtube.com/watch?v=_rrEzTYNZ20" },
+          { title: "Die Geschichte vom Nikolaus", url: "https://www.youtube.com/watch?v=TToCZwalvC8" },
+          { title: "Was macht denn der Weihnachtsbaum da?", url: "https://www.youtube.com/watch?v=QQeiiWgErK8" },
+          { title: "In der Weihnachtsbäckerei mit Otto", url: "https://www.youtube.com/watch?v=EzAjvS83GF0" },
+          { title: "Rico und Oskar: Weihnachten", url: "https://www.youtube.com/watch?v=nyr9fTER2Us" },
+          { title: "Wie macht man eine Herzdruckmassage?", url: "https://www.youtube.com/watch?v=szL2_MWtPqA" }
+        ]
+      },
+      {
+        title: "Wie wird ein Feuerwehrauto gebaut?",
+        category: "Die Maus",
+        desc: "Die Maus zeigt Schritt für Schritt, wie aus Einzelteilen ein komplettes Feuerwehrauto entsteht.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU70BwzNdUNlxCPLvkOXa5Y3s&si=Sr-vErct6NGFr6_9",
+        emoji: "🚒",
+        creator: "WDR",
+        episodes: []
+      },
+      {
+        title: "Wie wird ein ICE gebaut?",
+        category: "Die Maus",
+        desc: "Vom ersten Blech bis zur Jungfernfahrt – die Entstehung eines Hochgeschwindigkeitszugs.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU70ZXrUi0dykdemfNUlAWF95&si=sUrm-Sm9zqeaNC0d",
+        emoji: "🚄",
+        creator: "WDR",
+        episodes: []
+      },
+      {
+        title: "Stell dir vor!",
+        category: "Die Maus",
+        desc: "Fantasievolle Geschichten, die zum Träumen und Nachdenken anregen.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU72azZkXXRbPbXZgHuXt1_DJ&si=aZNWdwfirZVog2K_",
+        emoji: "💭",
+        creator: "WDR",
+        episodes: []
+      },
+      {
+        title: "Klima Maus",
+        category: "Die Maus",
+        desc: "Klimawandel kindgerecht erklärt – was können wir für unsere Erde tun?",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU7077wWl_XI5VhQFJXErbJ-r&si=T4zFx3LK_DUR1oaq",
+        emoji: "🌍",
+        creator: "WDR",
+        episodes: []
+      },
+      {
+        title: "Programmieren mit der Maus (Staffel 1)",
+        category: "Die Maus",
+        desc: "Spielerisch programmieren lernen – der perfekte Einstieg in die Welt des Codings.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU704MRDiL_qQQB54jN5xkrJM&si=eGr1m_0vSDNcPnbr",
+        emoji: "👨‍💻",
+        creator: "WDR",
+        episodes: []
+      },
+      {
+        title: "Programmieren mit der Maus (Staffel 2)",
+        category: "Die Maus",
+        desc: "Fortgeschrittene Programmierkonzepte – weiter geht's mit Spaß am Coden.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU73dyjGCJsBqQyLn4Lv7pfrV&si=BmmThlhDmIVf2ATX",
+        emoji: "👩‍💻",
+        creator: "WDR",
+        episodes: []
+      },
+      {
+        title: "Weltall-Geschichten",
+        category: "Die Maus",
+        desc: "Eine Reise durchs Universum – Sterne, Planeten und Raumfahrt verständlich erklärt.",
+        url: "https://youtube.com/playlist?list=PLU-Hghe0CU72-SYM_kWM9Phw_3lOTa840&si=MOqZNbEX3X_iS647",
+        emoji: "🌌",
+        creator: "WDR",
+        episodes: []
+      }
+    ];
+
+    // Load series from localStorage or use defaults
+    let serien = [];
+    const storedSeries = localStorage.getItem('lernoaseSeries');
+    if (storedSeries) {
+      try {
+        serien = JSON.parse(storedSeries);
+      } catch (e) {
+        serien = [...defaultSerien];
+      }
+    } else {
+      serien = [...defaultSerien];
+    }
+
+    // App State
+    let activeFilter = 'Alle';
+    let searchQuery = '';
+    let currentSeries = null;
+    let episodeSearchQuery = '';
+    let customCategories = JSON.parse(localStorage.getItem('customCategories') || '[]');
+
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+
+            // Listen for updates
+            registration.addEventListener('updatefound', () => {
+              newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New update available
+                  document.getElementById('updateBanner').classList.add('show');
+                }
+              });
+            });
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+
+      // Listen for messages from SW
+      navigator.serviceWorker.addEventListener('message', event => {
+        if (event.data.type === 'OFFLINE_READY') {
+          showToast('App ist jetzt offline verfügbar! 🎉');
+        }
+      });
+    }
+
+    // PWA Install Prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      // Show install banner after 30 seconds or 3 page views
+      const installShown = localStorage.getItem('installShown');
+      const pageViews = parseInt(localStorage.getItem('pageViews') || '0') + 1;
+      localStorage.setItem('pageViews', pageViews.toString());
+
+      if (!installShown && pageViews >= 3) {
+        setTimeout(() => {
+          document.getElementById('installBanner').classList.add('show');
+        }, 30000);
+      }
+    });
+
+    // Install App
+    function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+            showToast('App wird installiert! 🎉');
+          }
+          deferredPrompt = null;
+          document.getElementById('installBanner').classList.remove('show');
+          localStorage.setItem('installShown', 'true');
+        });
+      }
+    }
+
+    function dismissInstall() {
+      document.getElementById('installBanner').classList.remove('show');
+      localStorage.setItem('installShown', 'true');
+    }
+
+    // Update App
+    function updateApp() {
+      if (newWorker) {
+        newWorker.postMessage({ type: 'SKIP_WAITING' });
+      }
+      window.location.reload();
+    }
+
+    // Offline Detection
+    window.addEventListener('online', () => {
+      document.getElementById('offlineIndicator').classList.remove('show');
+      syncOfflineData();
+    });
+
+    window.addEventListener('offline', () => {
+      document.getElementById('offlineIndicator').classList.add('show');
+    });
+
+    // Sync Offline Data
+    function syncOfflineData() {
+      // Sync any offline changes when back online
+      const offlineQueue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
+      if (offlineQueue.length > 0) {
+        // Process offline queue
+        offlineQueue.forEach(action => {
+          // Sync with server if needed
+        });
+        localStorage.removeItem('offlineQueue');
+        showToast('Offline-Änderungen wurden synchronisiert!');
+      }
+    }
+
+    // LocalStorage Functions
+    function saveSeries() {
+      localStorage.setItem('lernoaseSeries', JSON.stringify(serien));
+    }
+
+    function getFavorites() {
+      const stored = localStorage.getItem('favoriteLinks');
+      return stored ? JSON.parse(stored) : [];
+    }
+
+    function setFavorites(favorites) {
+      localStorage.setItem('favoriteLinks', JSON.stringify(favorites));
+    }
+
+    function saveCategories() {
+      localStorage.setItem('customCategories', JSON.stringify(customCategories));
+      updateCategorySelects();
+      displaySeries();
+    }
+
+    // Toast Notifications
+    function showToast(message, duration = 3000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
+
+    // Navigation Functions
+    function showOverview() {
+      document.getElementById('overviewPage').classList.add('active');
+      document.getElementById('detailPage').classList.remove('active');
+      document.getElementById('backBtn').classList.remove('visible');
+      currentSeries = null;
+      window.history.pushState({page: 'overview'}, '', '#');
+    }
+
+    function showDetail(series) {
+      currentSeries = series;
+      document.getElementById('overviewPage').classList.remove('active');
+      document.getElementById('detailPage').classList.add('active');
+      document.getElementById('backBtn').classList.add('visible');
+      renderSeriesDetail(series);
+      window.history.pushState({page: 'detail', series: series}, '', '#serie');
+    }
+
+    // Kategorie-Klasse ermitteln
+    function getCategoryClass(category) {
+      const normalized = category.toLowerCase();
+
+      // Check custom categories first
+      const customCat = customCategories.find(c => c.name === category);
+      if (customCat) {
+        return 'custom-category';
+      }
+
+      if (normalized.includes('maus')) return 'cat-maus';
+      if (normalized.includes('kreativ')) return 'cat-kreativ';
+      if (normalized.includes('geschichte')) return 'cat-geschichte';
+      if (normalized.includes('gesellschaft')) return 'cat-gesellschaft';
+      if (normalized.includes('löwenzahn')) return 'cat-loewenzahn';
+      return 'cat-wissen';
+    }
+
+    // Get Category Style
+    function getCategoryStyle(category) {
+      const customCat = customCategories.find(c => c.name === category);
+      if (customCat) {
+        const color = customCat.color;
+        const darkerColor = adjustColor(color, -40);
+        return `
+          --category-bg: ${color}20;
+          --category-color: ${darkerColor};
+          --category-border: ${color}50;
+        `;
+      }
+      return '';
+    }
+
+    // Adjust Color Brightness
+    function adjustColor(color, amount) {
+      const num = parseInt(color.replace('#', ''), 16);
+      const r = Math.max(0, Math.min(255, (num >> 16) + amount));
+      const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
+      const b = Math.max(0, Math.min(255, (num & 0x0000FF) + amount));
+      return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+    }
+
+    // Ripple Effect
+    function addRippleEffect(element) {
+      element.classList.add('ripple');
+      setTimeout(() => {
+        element.classList.remove('ripple');
+      }, 600);
+    }
+
+    // Update Filter Display
+    function updateFilterDisplay() {
+      const container = document.getElementById('filtersContainer');
+      const existingFilters = container.querySelectorAll('.filter-btn:not(.add-category-btn)');
+
+      // Add custom category filters
+      customCategories.forEach(cat => {
+        if (![...existingFilters].find(btn => btn.dataset.filter === cat.name)) {
+          const btn = document.createElement('button');
+          btn.className = 'filter-btn custom-category';
+          btn.dataset.filter = cat.name;
+          btn.innerHTML = `
+            ${cat.emoji} ${cat.name}
+            <button class="delete-category" onclick="deleteCategory('${cat.name}')" title="Kategorie löschen">×</button>
+          `;
+          btn.style.cssText = getCategoryStyle(cat.name);
+          btn.onclick = (e) => {
+            if (!e.target.classList.contains('delete-category')) {
+              document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
+              activeFilter = cat.name;
+              displaySeries();
+            }
+          };
+          container.insertBefore(btn, container.querySelector('.add-category-btn'));
+        }
+      });
+    }
+
+    // Series Overview Display
+    function displaySeries() {
+      const favorites = getFavorites();
+      const allSeries = [...serien, ...favorites];
+
+      const filteredSeries = allSeries.filter(series => {
+        const matchesFilter = activeFilter === 'Alle' ||
+          (activeFilter === 'Favoriten' ? favorites.some(f => f.url === series.url) :
+           series.category === activeFilter);
+
+        const matchesSearch = !searchQuery ||
+          series.title.toLowerCase().includes(searchQuery) ||
+          (series.desc || '').toLowerCase().includes(searchQuery) ||
+          (series.creator || '').toLowerCase().includes(searchQuery);
+
+        return matchesFilter && matchesSearch;
+      });
+
+      const seriesList = document.getElementById('seriesList');
+
+      if (filteredSeries.length === 0) {
+        seriesList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <p>Keine Serien gefunden</p>
+          </div>
+        `;
+        return;
+      }
+
+      seriesList.innerHTML = filteredSeries.map((series, index) => `
+        <article class="series-card" style="animation-delay: ${index * 0.05}s"
+                 onclick="showDetail(${JSON.stringify(series).replace(/"/g, '&quot;')})">
+          <div class="series-header">
+            <h3 class="series-title">
+              ${series.emoji ? `<span class="series-emoji">${series.emoji}</span>` : ''}
+              ${series.title}
+            </h3>
+            <span class="series-category ${getCategoryClass(series.category)}"
+                  data-category="${series.category}"
+                  style="${getCategoryStyle(series.category)}">
+              ${series.category}
+            </span>
+          </div>
+          <p class="series-desc">${series.desc || 'Keine Beschreibung verfügbar'}</p>
+          ${series.episodes && series.episodes.length > 0 ? `
+            <div class="series-meta">
+              <span class="episode-count">📺 ${series.episodes.length} Episoden</span>
+            </div>
+          ` : ''}
+          <div class="action-buttons">
+            <span class="view-series-btn">
+              <span>👁️</span>
+              Serie ansehen
+            </span>
+            <a href="${series.url}" target="_blank" rel="noopener" class="youtube-btn"
+               onclick="event.stopPropagation()">
+              <span class="youtube-icon">▶</span>
+              YouTube Playlist
+            </a>
+          </div>
+        </article>
+      `).join('');
+
+      updateFilterDisplay();
+    }
+
+    // Series Detail Display
+    function renderSeriesDetail(series) {
+      const detailContainer = document.getElementById('seriesDetail');
+
+      detailContainer.innerHTML = `
+        <div class="detail-header">
+          <div class="detail-title">
+            ${series.emoji ? `<span class="series-emoji">${series.emoji}</span>` : ''}
+            <h2>${series.title}</h2>
+          </div>
+          <span class="series-category ${getCategoryClass(series.category)}"
+                data-category="${series.category}"
+                style="${getCategoryStyle(series.category)}">
+            ${series.category}
+          </span>
+
+          <div class="detail-info">
+            <div class="info-section">
+              <h3>Beschreibung</h3>
+              <p>${series.desc || 'Keine Beschreibung verfügbar'}</p>
+            </div>
+            ${series.creator ? `
+              <div class="info-section">
+                <h3>Erstellt von</h3>
+                <p>${series.creator}</p>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="action-buttons">
+            <a href="${series.url}" target="_blank" rel="noopener" class="youtube-btn">
+              <span>▶</span>
+              Gesamte Playlist auf YouTube
+            </a>
+            ${getFavorites().some(f => f.url === series.url) ? '' : `
+              <button class="view-series-btn" onclick="addToFavorites(${JSON.stringify(series).replace(/"/g, '&quot;')})">
+                <span>⭐</span>
+                Zu Favoriten hinzufügen
+              </button>
+            `}
+          </div>
+        </div>
+
+        ${series.episodes && series.episodes.length > 0 ? `
+          <div class="episodes-section">
+            <div class="episodes-header">
+              <h3>Episoden (${series.episodes.length})</h3>
+              <div class="episode-search">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Episode suchen..."
+                       onchange="filterEpisodes(this.value)">
+              </div>
+            </div>
+            <div class="episodes-grid" id="episodesGrid">
+              ${renderEpisodes(series.episodes)}
+            </div>
+            <div class="episodes-notice">
+              ℹ️ Dies ist eine Auswahl verfügbarer Episoden.
+              <a href="${series.url}" target="_blank">Besuche die YouTube-Playlist</a>
+              für weitere und aktuellere Inhalte.
+            </div>
+          </div>
+        ` : `
+          <div class="episodes-section">
+            <div class="empty-state">
+              <div class="empty-state-icon">📺</div>
+              <p>Noch keine Episoden hinzugefügt</p>
+              <a href="${series.url}" target="_blank" class="youtube-btn" style="margin-top: 1rem;">
+                <span>▶</span>
+                Zur YouTube Playlist
+              </a>
+            </div>
+          </div>
+        `}
+      `;
+    }
+
+    // Episodes Rendering
+    function renderEpisodes(episodes, searchQuery = '') {
+      const filteredEpisodes = episodes.filter(episode =>
+        !searchQuery || episode.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      if (filteredEpisodes.length === 0) {
+        return `
+          <div class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <p>Keine Episoden gefunden</p>
+          </div>
+        `;
+      }
+
+      return filteredEpisodes.map((episode, index) => `
+        <a href="${episode.url}" target="_blank" rel="noopener"
+           class="episode-card" style="animation-delay: ${index * 0.03}s"
+           onclick="addRippleEffect(this)">
+          <div class="episode-number">Episode ${index + 1}</div>
+          <div class="episode-title">
+            ${episode.title}
+            <span class="episode-play-icon">▶</span>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    // Filter Episodes
+    function filterEpisodes(query) {
+      if (!currentSeries || !currentSeries.episodes) return;
+
+      episodeSearchQuery = query;
+      const episodesGrid = document.getElementById('episodesGrid');
+      episodesGrid.innerHTML = renderEpisodes(currentSeries.episodes, query);
+    }
+
+    // Add to Favorites
+    function addToFavorites(series) {
+      const favorites = getFavorites();
+      if (!favorites.some(f => f.url === series.url)) {
+        favorites.push(series);
+        setFavorites(favorites);
+        showToast('Serie zu Favoriten hinzugefügt! ⭐');
+        renderSeriesDetail(series); // Re-render to update button
+      }
+    }
+
+    // Category Management
+    function openCategoryModal() {
+      document.getElementById('categoryModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCategoryModal() {
+      document.getElementById('categoryModal').classList.remove('active');
+      document.body.style.overflow = '';
+      document.getElementById('categoryForm').reset();
+      document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+    }
+
+    function deleteCategory(categoryName) {
+      if (confirm(`Möchtest du die Kategorie "${categoryName}" wirklich löschen?`)) {
+        customCategories = customCategories.filter(c => c.name !== categoryName);
+        saveCategories();
+        showToast('Kategorie gelöscht!');
+
+        // Reset filter if deleted category was active
+        if (activeFilter === categoryName) {
+          document.querySelector('[data-filter="Alle"]').click();
+        }
+      }
+    }
+
+    // Update Category Selects
+    function updateCategorySelects() {
+      const selects = document.querySelectorAll('select[name="category"]');
+      selects.forEach(select => {
+        // Keep existing options and add custom ones
+        const existingOptions = [...select.options].slice(0, 7); // Keep default options
+        select.innerHTML = '';
+        existingOptions.forEach(opt => select.appendChild(opt));
+
+        // Add custom categories
+        customCategories.forEach(cat => {
+          const option = document.createElement('option');
+          option.value = cat.name;
+          option.textContent = `${cat.emoji} ${cat.name}`;
+          select.appendChild(option);
+        });
+      });
+    }
+
+    // Filter Functionality
+    document.querySelectorAll('.filter-btn:not(.add-category-btn)').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.filter;
+        displaySeries();
+      });
+    });
+
+    // Search Functionality
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      searchQuery = e.target.value.toLowerCase();
+      displaySeries();
+    });
+
+    // Random Series
+    function randomSerie() {
+      const favorites = getFavorites();
+      const allSeries = [...serien, ...favorites];
+      const filteredSeries = allSeries.filter(series => {
+        const matchesFilter = activeFilter === 'Alle' ||
+          (activeFilter === 'Favoriten' ? favorites.some(f => f.url === series.url) :
+           series.category === activeFilter);
+        return matchesFilter;
+      });
+
+      if (filteredSeries.length > 0) {
+        const randomIndex = Math.floor(Math.random() * filteredSeries.length);
+        showDetail(filteredSeries[randomIndex]);
+      }
+    }
+
+    // Modal Functions
+    function openAddModal() {
+      document.getElementById('addModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      updateCategorySelects();
+    }
+
+    function closeAddModal() {
+      document.getElementById('addModal').classList.remove('active');
+      document.body.style.overflow = '';
+      document.getElementById('addForm').reset();
+      // Reset episodes inputs
+      document.getElementById('episodesInput').innerHTML = `
+        <div class="episode-input-row">
+          <input type="text" placeholder="Episodentitel" name="episode_title[]">
+          <input type="url" placeholder="YouTube URL" name="episode_url[]">
+          <button type="button" onclick="removeEpisodeInput(this)">×</button>
+        </div>
+      `;
+    }
+
+    // Episode Input Management
+    function addEpisodeInput() {
+      const container = document.getElementById('episodesInput');
+      const newRow = document.createElement('div');
+      newRow.className = 'episode-input-row';
+      newRow.innerHTML = `
+        <input type="text" placeholder="Episodentitel" name="episode_title[]">
+        <input type="url" placeholder="YouTube URL" name="episode_url[]">
+        <button type="button" onclick="removeEpisodeInput(this)">×</button>
+      `;
+      container.appendChild(newRow);
+    }
+
+    function removeEpisodeInput(button) {
+      const container = document.getElementById('episodesInput');
+      if (container.children.length > 1) {
+        button.parentElement.remove();
+      }
+    }
+
+    // Color Picker
+    document.querySelectorAll('.color-option').forEach(option => {
+      option.addEventListener('click', () => {
+        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+        option.classList.add('selected');
+        document.querySelector('input[name="color"]').value = option.dataset.color;
+      });
+    });
+
+    // Form Submit - Add Series
+    document.getElementById('addForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      const episodeTitles = formData.getAll('episode_title[]');
+      const episodeUrls = formData.getAll('episode_url[]');
+
+      const episodes = [];
+      for (let i = 0; i < episodeTitles.length; i++) {
+        if (episodeTitles[i].trim() && episodeUrls[i].trim()) {
+          episodes.push({
+            title: episodeTitles[i].trim(),
+            url: episodeUrls[i].trim()
+          });
+        }
+      }
+
+      const newSeries = {
+        title: formData.get('title').trim(),
+        url: formData.get('url').trim(),
+        category: formData.get('category'),
+        desc: formData.get('desc').trim(),
+        creator: formData.get('creator').trim(),
+        emoji: formData.get('emoji').trim(),
+        episodes: episodes
+      };
+
+      // Check if series already exists
+      if (!serien.some(s => s.url === newSeries.url)) {
+        serien.push(newSeries);
+        saveSeries();
+        showToast('Serie erfolgreich hinzugefügt! 🎉');
+
+        // Switch to the new series category
+        const filterBtn = document.querySelector(`[data-filter="${newSeries.category}"]`);
+        if (filterBtn) {
+          filterBtn.click();
+        } else {
+          displaySeries();
+        }
+
+        closeAddModal();
+      } else {
+        showToast('Diese Serie existiert bereits!');
+      }
+    });
+
+    // Form Submit - Add Category
+    document.getElementById('categoryForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      const newCategory = {
+        name: formData.get('name').trim(),
+        emoji: formData.get('emoji').trim(),
+        color: formData.get('color')
+      };
+
+      // Check if category already exists
+      if (!customCategories.some(c => c.name.toLowerCase() === newCategory.name.toLowerCase()) &&
+          !['Wissen', 'Geschichte', 'Gesellschaft', 'Kreativ', 'Die Maus', 'Löwenzahn', 'Favoriten', 'Alle'].includes(newCategory.name)) {
+        customCategories.push(newCategory);
+        saveCategories();
+        showToast('Kategorie erfolgreich erstellt! 🎨');
+        closeCategoryModal();
+      } else {
+        showToast('Diese Kategorie existiert bereits!');
+      }
+    });
+
+    // Modal Close on Outside Click
+    document.getElementById('addModal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        closeAddModal();
+      }
+    });
+
+    document.getElementById('categoryModal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        closeCategoryModal();
+      }
+    });
+
+    // Browser Back/Forward Navigation
+    window.addEventListener('popstate', (e) => {
+      if (e.state && e.state.page === 'detail') {
+        showDetail(e.state.series);
+      } else {
+        showOverview();
+      }
+    });
+
+    // Keyboard Navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (document.getElementById('addModal').classList.contains('active')) {
+          closeAddModal();
+        } else if (document.getElementById('categoryModal').classList.contains('active')) {
+          closeCategoryModal();
+        } else if (document.getElementById('detailPage').classList.contains('active')) {
+          showOverview();
+        }
+      }
+    });
+
+    // Initialize
+    displaySeries();
+    updateCategorySelects();
+    window.history.replaceState({page: 'overview'}, '', '#');
+
+    // Check if app is installed
+    if (window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone === true) {
+      console.log('App is installed');
+    }
+
+    // iOS Install Instructions
+    if (/iPhone|iPad|iPod/.test(navigator.userAgent) && !window.navigator.standalone) {
+      const lastPrompt = localStorage.getItem('iosInstallPrompt');
+      const now = Date.now();
+
+      if (!lastPrompt || now - parseInt(lastPrompt) > 604800000) { // 7 days
+        setTimeout(() => {
+          if (!document.getElementById('installBanner').classList.contains('show')) {
+            showToast('Tippe auf Teilen und dann "Zum Home-Bildschirm" um die App zu installieren 📱');
+            localStorage.setItem('iosInstallPrompt', now.toString());
+          }
+        }, 60000); // Show after 1 minute
+      }
+    }
+  </script>
+
+  <script>
+    // Create manifest.json content
+    const manifestContent = {
+      "name": "Lern-Oase - Wissensserien für Kids",
+      "short_name": "Lern-Oase",
+      "description": "Entdecke faszinierende Wissens- und Kreativserien für neugierige Köpfe",
+      "start_url": "/",
+      "display": "standalone",
+      "orientation": "portrait",
+      "theme_color": "#04932a87",
+      "background_color": "#172f0c",
+      "icons": [
+        {
+          "src": "/icons/icon-72x72.png",
+          "sizes": "72x72",
+          "type": "image/png",
+          "purpose": "any maskable"
+        },
+        {
+          "src": "/icons/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any maskable"
+        },
+        {
+          "src": "/icons/icon-128x128.png",
+          "sizes": "128x128",
+          "type": "image/png",
+          "purpose": "any maskable"
+        },
+        {
+          "src": "/icons/icon-144x144.png",
+          "sizes": "144x144",
+          "type": "image/png",
+          "purpose": "any maskable"
+        },
+        {
+          "src": "/icons/icon-152x152.png",
+          "sizes": "152x152",
+          "type": "image/png",
+          "purpose": "any maskable"
+        },
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any maskable"
+        },
+        {
+          "src": "/icons/icon-384x384.png",
+          "sizes": "384x384",
+          "type": "image/png",
+          "purpose": "any maskable"
+        },
+        {
+          "src": "/icons/icon-512x512.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "any maskable"
+        }
+      ],
+      "categories": ["education", "kids", "entertainment"],
+      "lang": "de-DE",
+      "dir": "ltr",
+      "prefer_related_applications": false,
+      "shortcuts": [
+        {
+          "name": "Neue Serie hinzufügen",
+          "short_name": "Hinzufügen",
+          "description": "Füge eine neue Serie zur Sammlung hinzu",
+          "url": "/#add",
+          "icons": [{ "src": "/icons/add-96x96.png", "sizes": "96x96" }]
+        },
+        {
+          "name": "Favoriten",
+          "short_name": "Favoriten",
+          "description": "Zeige deine Lieblingsserien",
+          "url": "/#favoriten",
+          "icons": [{ "src": "/icons/star-96x96.png", "sizes": "96x96" }]
+        }
+      ]
+    };
+
+    // Create service-worker.js content
+    const serviceWorkerContent = `
+const CACHE_NAME = 'lern-oase-v1';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/icons/icon-72x72.png',
+  '/icons/icon-96x96.png',
+  '/icons/icon-128x128.png',
+  '/icons/icon-144x144.png',
+  '/icons/icon-152x152.png',
+  '/icons/icon-192x192.png',
+  '/icons/icon-384x384.png',
+  '/icons/icon-512x512.png'
+];
+
+// Install Service Worker
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Opened cache');
+        return cache.addAll(urlsToCache);
+      })
+      .then(() => {
+        self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({ type: 'OFFLINE_READY' });
+          });
+        });
+      })
+  );
+});
+
+// Fetch Event
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        // Cache hit - return response
+        if (response) {
+          return response;
+        }
+
+        // Clone the request
+        const fetchRequest = event.request.clone();
+
+        return fetch(fetchRequest).then(response => {
+          // Check if valid response
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+
+          // Clone the response
+          const responseToCache = response.clone();
+
+          caches.open(CACHE_NAME)
+            .then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+
+          return response;
+        }).catch(() => {
+          // Offline fallback
+          if (event.request.destination === 'document') {
+            return caches.match('/');
+          }
+        });
+      })
+  );
+});
+
+// Activate Event
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
+
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+// Skip Waiting
+self.addEventListener('message', event => {
+  if (event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// Background Sync for offline actions
+self.addEventListener('sync', event => {
+  if (event.tag === 'sync-offline-data') {
+    event.waitUntil(syncOfflineData());
+  }
+});
+
+async function syncOfflineData() {
+  // Sync offline data when connection is restored
+  const cache = await caches.open(CACHE_NAME);
+  // Implementation for syncing offline data
+}
+`;
+
+    console.log('manifest.json:', manifestContent);
+    console.log('service-worker.js:', serviceWorkerContent);
+  </script>
+</body>
+</html>
