@@ -2716,6 +2716,75 @@ async function syncOfflineData() {
 
     console.log('manifest.json:', manifestContent);
     console.log('service-worker.js:', serviceWorkerContent);
+
+// --- PWA INSTALLATIONS-LOGIK ---
+
+    let deferredPrompt; // Diese Variable speichert das "Installations-Angebot" des Browsers
+
+    const installBanner = document.getElementById('installBanner');
+    const installButton = document.querySelector('.install-btn');
+    const dismissButton = document.querySelector('.install-dismiss');
+
+    // 1. Auf das "Installations-Angebot" des Browsers warten
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Verhindern, dass der Browser seinen eigenen Mini-Banner anzeigt
+      e.preventDefault();
+
+      // Das Event-Objekt speichern, damit wir es später verwenden können
+      deferredPrompt = e;
+
+      // Unseren benutzerdefinierten Installations-Banner anzeigen
+      installBanner.classList.add('show');
+      console.log('`beforeinstallprompt`-Ereignis ausgelöst. Installations-Banner wird angezeigt.');
+    });
+
+    // 2. Logik für den "Installieren"-Button
+    async function installApp() {
+      // Nur fortfahren, wenn ein Angebot zum Installieren vorliegt
+      if (!deferredPrompt) {
+        console.log('Kein Installations-Angebot verfügbar.');
+        return;
+      }
+
+      // Den nativen Installations-Dialog des Browsers anzeigen
+      deferredPrompt.prompt();
+
+      // Auf die Entscheidung des Nutzers warten (erlaubt/abgelehnt)
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`Benutzerentscheidung war: ${outcome}`);
+
+      if (outcome === 'accepted') {
+        showToast('App wird installiert! 🎉');
+      }
+
+      // Das Angebot kann nur einmal verwendet werden. Variable zurücksetzen.
+      deferredPrompt = null;
+
+      // Den Banner ausblenden, egal wie die Entscheidung war
+      installBanner.classList.remove('show');
+    }
+
+    // 3. Logik für den "Später"-Button
+    function dismissInstall() {
+      // Einfach nur den Banner ausblenden. Wir speichern nichts.
+      // Dadurch wird der Browser beim nächsten Laden der Seite erneut fragen.
+      installBanner.classList.remove('show');
+      console.log('Installations-Banner wurde für diese Sitzung ausgeblendet.');
+    }
+
+    // Event-Listener zu den Buttons hinzufügen
+    installButton.addEventListener('click', installApp);
+    dismissButton.addEventListener('click', dismissInstall);
+
+    // Hilfsfunktion für Benachrichtigungen (bereits in Ihrem Code vorhanden)
+    function showToast(message, duration = 3000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
   </script>
 </body>
 </html>
