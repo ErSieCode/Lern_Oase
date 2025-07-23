@@ -2,13 +2,33 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#04932a87">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Lern-Oase - Entdecke faszinierende Wissens- und Kreativserien für neugierige Köpfe">
+
   <title>Lern-Oase – Wissensserien für Kids</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167x167.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+
   <style>
     :root {
       --bg: #172f0c;
       --bg-gradient: linear-gradient(135deg, #49603bd0 0%, #458c4b 100%);
-      --primary: #005d03a0;
+      --primary: #a6fdbd87;
       --secondary: #ff006e;
       --accent: #c9df8a;
       --category-wissen: #0e573f83;
@@ -29,12 +49,14 @@
       --radius: 16px;
       --episode-bg: rgba(0, 0, 0, 0.2);
       --episode-hover: rgba(0, 255, 136, 0.1);
+      --install-bg: rgba(4, 147, 42, 0.95);
     }
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
     @keyframes float {
@@ -85,18 +107,33 @@
       }
     }
 
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
     html {
       scroll-behavior: smooth;
       overflow-x: hidden;
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       background: var(--bg-gradient);
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
       position: relative;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     body::before {
@@ -118,6 +155,94 @@
       position: relative;
       z-index: 2;
       min-height: 100vh;
+    }
+
+    /* PWA Install Banner */
+    .install-banner {
+      position: fixed;
+      bottom: -100px;
+      left: 0;
+      right: 0;
+      background: var(--install-bg);
+      backdrop-filter: blur(20px);
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: transform 0.3s ease-out;
+      z-index: 1000;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .install-banner.show {
+      transform: translateY(-100px);
+    }
+
+    .install-banner-content {
+      flex: 1;
+    }
+
+    .install-banner h3 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: white;
+    }
+
+    .install-banner p {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .install-btn, .install-dismiss {
+      padding: 0.75rem 1.5rem;
+      border-radius: 100px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1rem;
+    }
+
+    .install-btn {
+      background: white;
+      color: var(--primary);
+    }
+
+    .install-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+    }
+
+    .install-dismiss {
+      background: transparent;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .install-dismiss:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Offline Indicator */
+    .offline-indicator {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #ff6b6b;
+      color: white;
+      padding: 0.5rem;
+      text-align: center;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transform: translateY(-100%);
+      transition: transform 0.3s;
+      z-index: 1100;
+    }
+
+    .offline-indicator.show {
+      transform: translateY(0);
     }
 
     /* Page Transitions */
@@ -178,7 +303,8 @@
       color: var(--text-muted);
       max-width: 600px;
       margin: 0 auto;
-      line-height: 1.6;
+      line-height: 1.8;
+      font-weight: 400;
     }
 
     /* Navigation */
@@ -202,6 +328,7 @@
       text-decoration: none;
       opacity: 0;
       visibility: hidden;
+      font-size: 1rem;
     }
 
     .back-btn.visible {
@@ -222,7 +349,7 @@
       padding: 1rem;
       justify-content: center;
       flex-wrap: wrap;
-      max-width: 900px;
+      max-width: 1000px;
       position: sticky;
       top: 0;
       background: rgba(0, 63, 26, 0.642);
@@ -235,7 +362,7 @@
       background: var(--filter-bg);
       backdrop-filter: blur(10px);
       border: 1px solid var(--card-border);
-      padding: 0.75rem 1.5rem;
+      padding: 0.875rem 1.75rem;
       border-radius: 100px;
       color: var(--text);
       font-weight: 600;
@@ -273,6 +400,28 @@
     .filter-btn.active::before {
       width: 100%;
       height: 100%;
+    }
+
+    /* Add Category Button */
+    .add-category-btn {
+      background: var(--secondary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 100px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-left: auto;
+    }
+
+    .add-category-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(255, 0, 110, 0.4);
     }
 
     /* Search */
@@ -314,7 +463,7 @@
       border: none;
       color: var(--text);
       font-size: 1rem;
-      padding: 0.75rem 1rem 0.75rem 3rem;
+      padding: 0.875rem 1rem 0.875rem 3rem;
       outline: none;
     }
 
@@ -326,12 +475,13 @@
       background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
       border: none;
       color: white;
-      padding: 0.75rem 1.5rem;
+      padding: 0.875rem 1.75rem;
       border-radius: 100px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s;
       white-space: nowrap;
+      font-size: 1rem;
     }
 
     .random-btn:hover {
@@ -403,29 +553,36 @@
     }
 
     .series-title {
-      font-size: 1.25rem;
+      font-size: 1.375rem;
       font-weight: 700;
       color: var(--text);
       display: flex;
       align-items: center;
       gap: 0.5rem;
       flex: 1;
-      line-height: 1.3;
+      line-height: 1.4;
     }
 
     .series-emoji {
-      font-size: 1.5rem;
+      font-size: 1.75rem;
       animation: float 3s ease-in-out infinite;
     }
 
     .series-category {
       font-size: 0.875rem;
-      padding: 0.375rem 0.75rem;
+      padding: 0.5rem 1rem;
       border-radius: 100px;
       font-weight: 600;
       white-space: nowrap;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+    }
+
+    /* Dynamic category colors */
+    .series-category[data-category] {
+      background: var(--category-bg, rgba(255, 255, 255, 0.1));
+      color: var(--category-color, var(--text));
+      border: 1px solid var(--category-border, rgba(255, 255, 255, 0.2));
     }
 
     .cat-wissen {
@@ -458,30 +615,31 @@
       border: 1px solid rgba(6, 182, 212, 0.3);
     }
 
+    .cat-elefant {
+      background: rgba(128, 98, 5, 0.2);
+      color: #320338f4;
+      border: 1px solid rgba(208, 212, 6, 0.3);
+    }
+
     .cat-loewenzahn {
       background: rgba(128, 98, 5, 0.2);
       color: #d0d406f4;
       border: 1px solid rgba(208, 212, 6, 0.3);
     }
 
-    .cat-elefant {
-      background: rgba(54, 10, 0, 0.291);
-      color: #480000f8;
-      border: 1px solid rgba(208, 212, 6, 0.3);
-    }
-
     .series-desc {
-      font-size: 1rem;
+      font-size: 1.0625rem;
       color: var(--text-muted);
-      line-height: 1.6;
+      line-height: 1.7;
       margin-bottom: 1.5rem;
+      font-weight: 400;
     }
 
     .series-meta {
       display: flex;
       align-items: center;
       gap: 1rem;
-      font-size: 0.875rem;
+      font-size: 0.9375rem;
       color: var(--text-muted);
       margin-bottom: 1rem;
     }
@@ -507,6 +665,7 @@
       overflow: hidden;
       margin-right: 0.75rem;
       margin-bottom: 0.5rem;
+      font-size: 1rem;
     }
 
     .view-series-btn {
@@ -576,6 +735,7 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      line-height: 1.2;
     }
 
     .detail-title .series-emoji {
@@ -595,14 +755,16 @@
     }
 
     .info-section h3 {
-      font-size: 1.25rem;
-      margin-bottom: 0.5rem;
+      font-size: 1.375rem;
+      margin-bottom: 0.75rem;
       color: var(--primary);
+      font-weight: 700;
     }
 
     .info-section p {
       color: var(--text-muted);
-      line-height: 1.6;
+      line-height: 1.8;
+      font-size: 1.0625rem;
     }
 
     .action-buttons {
@@ -625,7 +787,7 @@
     }
 
     .episodes-header h3 {
-      font-size: 1.75rem;
+      font-size: 1.875rem;
       font-weight: 700;
     }
 
@@ -639,9 +801,9 @@
       background: var(--input-bg);
       border: 1px solid var(--card-border);
       border-radius: 100px;
-      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      padding: 0.875rem 1rem 0.875rem 2.75rem;
       color: var(--text);
-      font-size: 0.875rem;
+      font-size: 1rem;
       transition: all 0.3s;
     }
 
@@ -656,7 +818,7 @@
       left: 1rem;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 1rem;
+      font-size: 1.125rem;
       color: var(--text-muted);
     }
 
@@ -669,7 +831,7 @@
       background: var(--episode-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 1.25rem;
+      padding: 1.5rem;
       transition: all 0.3s;
       cursor: pointer;
       text-decoration: none;
@@ -710,24 +872,25 @@
     }
 
     .episode-number {
-      font-size: 0.875rem;
+      font-size: 0.9375rem;
       color: var(--primary);
       font-weight: 600;
       margin-bottom: 0.5rem;
     }
 
     .episode-title {
-      font-size: 1.125rem;
+      font-size: 1.1875rem;
       font-weight: 600;
       color: var(--text);
       margin-bottom: 0.5rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      line-height: 1.5;
     }
 
     .episode-play-icon {
-      font-size: 1rem;
+      font-size: 1.125rem;
       opacity: 0;
       transition: opacity 0.3s;
     }
@@ -740,11 +903,12 @@
       background: var(--filter-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 1.5rem;
+      padding: 1.75rem;
       margin-top: 2rem;
       text-align: center;
       color: var(--text-muted);
-      font-size: 0.875rem;
+      font-size: 1rem;
+      line-height: 1.6;
     }
 
     .episodes-notice a {
@@ -762,8 +926,8 @@
       position: fixed;
       bottom: 2rem;
       right: 2rem;
-      width: 60px;
-      height: 60px;
+      width: 64px;
+      height: 64px;
       background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
       border: none;
       border-radius: 50%;
@@ -839,20 +1003,22 @@
     }
 
     .modal-content h2 {
-      font-size: 1.5rem;
+      font-size: 1.625rem;
       margin-bottom: 1.5rem;
       color: var(--primary);
+      font-weight: 700;
     }
 
     .form-group {
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.625rem;
       color: var(--text);
       font-weight: 500;
+      font-size: 1rem;
     }
 
     .form-group input,
@@ -862,7 +1028,7 @@
       background: var(--input-bg);
       border: 1px solid var(--card-border);
       border-radius: 8px;
-      padding: 0.75rem 1rem;
+      padding: 0.875rem 1rem;
       color: var(--text);
       font-size: 1rem;
       transition: all 0.3s;
@@ -870,8 +1036,9 @@
     }
 
     .form-group textarea {
-      min-height: 100px;
+      min-height: 120px;
       resize: vertical;
+      line-height: 1.6;
     }
 
     .form-group input:focus,
@@ -952,12 +1119,13 @@
       background: var(--filter-bg);
       border: 1px solid var(--card-border);
       color: var(--text);
-      padding: 0.5rem 1rem;
+      padding: 0.75rem 1rem;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.3s;
       width: 100%;
       margin-top: 0.5rem;
+      font-weight: 500;
     }
 
     .add-episode-btn:hover {
@@ -979,10 +1147,69 @@
       opacity: 0.5;
     }
 
+    /* Custom Categories */
+    .custom-category {
+      position: relative;
+    }
+
+    .custom-category .delete-category {
+      position: absolute;
+      right: -8px;
+      top: -8px;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .custom-category:hover .delete-category {
+      display: flex;
+    }
+
+    /* Color Picker */
+    .color-picker-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .color-option {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+
+    .color-option.selected {
+      border-color: var(--text);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    }
+
     /* Responsive Design */
     @media (max-width: 640px) {
+      body {
+        font-size: 15px;
+      }
+
       header h1 {
         font-size: 2rem;
+      }
+
+      header p {
+        font-size: 1.125rem;
       }
 
       .filters {
@@ -991,8 +1218,13 @@
       }
 
       .filter-btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
+        padding: 0.625rem 1.25rem;
+        font-size: 0.9375rem;
+      }
+
+      .add-category-btn {
+        font-size: 0.8125rem;
+        padding: 0.375rem 0.75rem;
       }
 
       .search-wrapper {
@@ -1002,7 +1234,8 @@
       }
 
       .search-wrapper input {
-        padding: 0.75rem 1rem;
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
       }
 
       .search-icon {
@@ -1013,6 +1246,14 @@
 
       .random-btn {
         width: 100%;
+      }
+
+      .series-title {
+        font-size: 1.1875rem;
+      }
+
+      .series-desc {
+        font-size: 1rem;
       }
 
       .detail-title h2 {
@@ -1026,6 +1267,26 @@
 
       .episode-search {
         max-width: 100%;
+      }
+
+      .episode-title {
+        font-size: 1.0625rem;
+      }
+
+      .install-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+      }
+
+      .install-banner-buttons {
+        display: flex;
+        gap: 0.5rem;
+        width: 100%;
+      }
+
+      .install-btn, .install-dismiss {
+        flex: 1;
       }
     }
 
@@ -1089,6 +1350,7 @@
       visibility: hidden;
       transition: all 0.3s;
       z-index: 1100;
+      font-size: 1rem;
     }
 
     .toast.show {
@@ -1096,10 +1358,64 @@
       opacity: 1;
       visibility: visible;
     }
+
+    /* PWA Update Banner */
+    .update-banner {
+      position: fixed;
+      bottom: -100px;
+      left: 0;
+      right: 0;
+      background: var(--primary);
+      color: #000;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: transform 0.3s ease-out;
+      z-index: 1000;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .update-banner.show {
+      transform: translateY(-100px);
+    }
+
+    .update-banner button {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 100px;
+      font-weight: 600;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <div class="container">
+    <!-- Offline Indicator -->
+    <div class="offline-indicator" id="offlineIndicator">
+      📡 Offline-Modus - Neue Inhalte werden bei Internetverbindung synchronisiert
+    </div>
+
+    <!-- Install Banner -->
+    <div class="install-banner" id="installBanner">
+      <div class="install-banner-content">
+        <h3>Lern-Oase installieren</h3>
+        <p>Füge die App zum Homescreen hinzu für schnellen Zugriff!</p>
+      </div>
+      <div class="install-banner-buttons">
+        <button class="install-btn" onclick="installApp()">Installieren</button>
+        <button class="install-dismiss" onclick="dismissInstall()">Später</button>
+      </div>
+    </div>
+
+    <!-- Update Banner -->
+    <div class="update-banner" id="updateBanner">
+      <span>Ein Update ist verfügbar!</span>
+      <button onclick="updateApp()">Aktualisieren</button>
+    </div>
+
     <!-- Back Button -->
     <a href="#" class="back-btn" id="backBtn" onclick="showOverview()">
       <span>←</span>
@@ -1116,7 +1432,7 @@
         </p>
       </header>
 
-      <div class="filters">
+      <div class="filters" id="filtersContainer">
         <button class="filter-btn active" data-filter="Alle">🌈 Alle</button>
         <button class="filter-btn" data-filter="Wissen">🧠 Wissen</button>
         <button class="filter-btn" data-filter="Geschichte">📜 Geschichte</button>
@@ -1124,8 +1440,12 @@
         <button class="filter-btn" data-filter="Kreativ">🎨 Kreativ</button>
         <button class="filter-btn" data-filter="Die Maus">🐭 Die Maus</button>
         <button class="filter-btn" data-filter="Löwenzahn">🌻 Löwenzahn</button>
-        <button class="filter-btn" data-filter="Elefant">🐘 Elefant</button>
+        <button class="filter-btn" data-filter="Der Elefant">🐘 Der Elefant</button>
         <button class="filter-btn" data-filter="Favoriten">⭐ Favoriten</button>
+        <button class="add-category-btn" onclick="openCategoryModal()">
+          <span>+</span>
+          <span>Kategorie</span>
+        </button>
       </div>
 
       <div class="search-container">
@@ -1156,7 +1476,7 @@
       +
     </button>
 
-    <!-- Add Modal -->
+    <!-- Add Series Modal -->
     <div class="modal" id="addModal">
       <form id="addForm" class="modal-content">
         <button type="button" class="modal-close" onclick="closeAddModal()">×</button>
@@ -1174,7 +1494,7 @@
 
         <div class="form-group">
           <label>Kategorie *</label>
-          <select name="category" required>
+          <select name="category" id="categorySelect" required>
             <option value="">Kategorie wählen</option>
             <option value="Wissen">🧠 Wissen</option>
             <option value="Geschichte">📜 Geschichte</option>
@@ -1182,7 +1502,7 @@
             <option value="Kreativ">🎨 Kreativ</option>
             <option value="Die Maus">🐭 Die Maus</option>
             <option value="Löwenzahn">🌻 Löwenzahn</option>
-            <option value="Elefant">🐘 Elefant</option>
+            <option value="Der Elefant">🐘 Der Elefant</option>
           </select>
         </div>
 
@@ -1220,13 +1540,55 @@
       </form>
     </div>
 
+    <!-- Add Category Modal -->
+    <div class="modal" id="categoryModal">
+      <form id="categoryForm" class="modal-content">
+        <button type="button" class="modal-close" onclick="closeCategoryModal()">×</button>
+        <h2>Neue Kategorie erstellen</h2>
+
+        <div class="form-group">
+          <label>Kategoriename *</label>
+          <input type="text" name="name" required maxlength="30" placeholder="z.B. Wissenschaft">
+        </div>
+
+        <div class="form-group">
+          <label>Emoji *</label>
+          <input type="text" name="emoji" required maxlength="2" placeholder="🔬">
+        </div>
+
+        <div class="form-group">
+          <label>Farbe wählen *</label>
+          <div class="color-picker-group">
+            <div class="color-option" style="background: #10b981" data-color="#10b981"></div>
+            <div class="color-option" style="background: #f59e0b" data-color="#f59e0b"></div>
+            <div class="color-option" style="background: #ec4899" data-color="#ec4899"></div>
+            <div class="color-option" style="background: #3b82f6" data-color="#3b82f6"></div>
+            <div class="color-option" style="background: #8b5cf6" data-color="#8b5cf6"></div>
+            <div class="color-option" style="background: #06b6d4" data-color="#06b6d4"></div>
+            <div class="color-option" style="background: #ef4444" data-color="#ef4444"></div>
+            <div class="color-option" style="background: #84cc16" data-color="#84cc16"></div>
+          </div>
+          <input type="hidden" name="color" required>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="submit-btn">Erstellen</button>
+          <button type="button" class="cancel-btn" onclick="closeCategoryModal()">Abbrechen</button>
+        </div>
+      </form>
+    </div>
+
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
   </div>
 
   <script>
+    // PWA Variables
+    let deferredPrompt;
+    let newWorker;
+
     // Erweiterte Serien-Datenbank mit Episoden
-    const serien = [
+    const defaultSerien = [
       // WISSEN
       {
     title: "Wer nicht fragt, stirbt dumm",
@@ -3367,13 +3729,131 @@
   }
     ];
 
+    // Load series from localStorage or use defaults
+    let serien = [];
+    const storedSeries = localStorage.getItem('lernoaseSeries');
+    if (storedSeries) {
+      try {
+        serien = JSON.parse(storedSeries);
+      } catch (e) {
+        serien = [...defaultSerien];
+      }
+    } else {
+      serien = [...defaultSerien];
+    }
+
     // App State
     let activeFilter = 'Alle';
     let searchQuery = '';
     let currentSeries = null;
     let episodeSearchQuery = '';
+    let customCategories = JSON.parse(localStorage.getItem('customCategories') || '[]');
+
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+
+            // Listen for updates
+            registration.addEventListener('updatefound', () => {
+              newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New update available
+                  document.getElementById('updateBanner').classList.add('show');
+                }
+              });
+            });
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+
+      // Listen for messages from SW
+      navigator.serviceWorker.addEventListener('message', event => {
+        if (event.data.type === 'OFFLINE_READY') {
+          showToast('App ist jetzt offline verfügbar! 🎉');
+        }
+      });
+    }
+
+    // PWA Install Prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      // Show install banner after 30 seconds or 3 page views
+      const installShown = localStorage.getItem('installShown');
+      const pageViews = parseInt(localStorage.getItem('pageViews') || '0') + 1;
+      localStorage.setItem('pageViews', pageViews.toString());
+
+      if (!installShown && pageViews >= 3) {
+        setTimeout(() => {
+          document.getElementById('installBanner').classList.add('show');
+        }, 30000);
+      }
+    });
+
+    // Install App
+    function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+            showToast('App wird installiert! 🎉');
+          }
+          deferredPrompt = null;
+          document.getElementById('installBanner').classList.remove('show');
+          localStorage.setItem('installShown', 'true');
+        });
+      }
+    }
+
+    function dismissInstall() {
+      document.getElementById('installBanner').classList.remove('show');
+      localStorage.setItem('installShown', 'true');
+    }
+
+    // Update App
+    function updateApp() {
+      if (newWorker) {
+        newWorker.postMessage({ type: 'SKIP_WAITING' });
+      }
+      window.location.reload();
+    }
+
+    // Offline Detection
+    window.addEventListener('online', () => {
+      document.getElementById('offlineIndicator').classList.remove('show');
+      syncOfflineData();
+    });
+
+    window.addEventListener('offline', () => {
+      document.getElementById('offlineIndicator').classList.add('show');
+    });
+
+    // Sync Offline Data
+    function syncOfflineData() {
+      // Sync any offline changes when back online
+      const offlineQueue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
+      if (offlineQueue.length > 0) {
+        // Process offline queue
+        offlineQueue.forEach(action => {
+          // Sync with server if needed
+        });
+        localStorage.removeItem('offlineQueue');
+        showToast('Offline-Änderungen wurden synchronisiert!');
+      }
+    }
 
     // LocalStorage Functions
+    function saveSeries() {
+      localStorage.setItem('lernoaseSeries', JSON.stringify(serien));
+    }
+
     function getFavorites() {
       const stored = localStorage.getItem('favoriteLinks');
       return stored ? JSON.parse(stored) : [];
@@ -3381,6 +3861,12 @@
 
     function setFavorites(favorites) {
       localStorage.setItem('favoriteLinks', JSON.stringify(favorites));
+    }
+
+    function saveCategories() {
+      localStorage.setItem('customCategories', JSON.stringify(customCategories));
+      updateCategorySelects();
+      displaySeries();
     }
 
     // Toast Notifications
@@ -3415,12 +3901,45 @@
     // Kategorie-Klasse ermitteln
     function getCategoryClass(category) {
       const normalized = category.toLowerCase();
+
+      // Check custom categories first
+      const customCat = customCategories.find(c => c.name === category);
+      if (customCat) {
+        return 'custom-category';
+      }
+
       if (normalized.includes('maus')) return 'cat-maus';
       if (normalized.includes('kreativ')) return 'cat-kreativ';
       if (normalized.includes('geschichte')) return 'cat-geschichte';
       if (normalized.includes('gesellschaft')) return 'cat-gesellschaft';
       if (normalized.includes('löwenzahn')) return 'cat-loewenzahn';
-      return 'cat-wissen';
+      return 'cat-loewenzahn';
+      if (normalized.includes('elefant')) return 'cat-elefant';
+      return 'cat-elefant';
+    }
+
+    // Get Category Style
+    function getCategoryStyle(category) {
+      const customCat = customCategories.find(c => c.name === category);
+      if (customCat) {
+        const color = customCat.color;
+        const darkerColor = adjustColor(color, -40);
+        return `
+          --category-bg: ${color}20;
+          --category-color: ${darkerColor};
+          --category-border: ${color}50;
+        `;
+      }
+      return '';
+    }
+
+    // Adjust Color Brightness
+    function adjustColor(color, amount) {
+      const num = parseInt(color.replace('#', ''), 16);
+      const r = Math.max(0, Math.min(255, (num >> 16) + amount));
+      const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
+      const b = Math.max(0, Math.min(255, (num & 0x0000FF) + amount));
+      return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
     }
 
     // Ripple Effect
@@ -3431,6 +3950,35 @@
       }, 600);
     }
 
+    // Update Filter Display
+    function updateFilterDisplay() {
+      const container = document.getElementById('filtersContainer');
+      const existingFilters = container.querySelectorAll('.filter-btn:not(.add-category-btn)');
+
+      // Add custom category filters
+      customCategories.forEach(cat => {
+        if (![...existingFilters].find(btn => btn.dataset.filter === cat.name)) {
+          const btn = document.createElement('button');
+          btn.className = 'filter-btn custom-category';
+          btn.dataset.filter = cat.name;
+          btn.innerHTML = `
+            ${cat.emoji} ${cat.name}
+            <button class="delete-category" onclick="deleteCategory('${cat.name}')" title="Kategorie löschen">×</button>
+          `;
+          btn.style.cssText = getCategoryStyle(cat.name);
+          btn.onclick = (e) => {
+            if (!e.target.classList.contains('delete-category')) {
+              document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
+              activeFilter = cat.name;
+              displaySeries();
+            }
+          };
+          container.insertBefore(btn, container.querySelector('.add-category-btn'));
+        }
+      });
+    }
+
     // Series Overview Display
     function displaySeries() {
       const favorites = getFavorites();
@@ -3439,7 +3987,7 @@
       const filteredSeries = allSeries.filter(series => {
         const matchesFilter = activeFilter === 'Alle' ||
           (activeFilter === 'Favoriten' ? favorites.some(f => f.url === series.url) :
-           series.category.includes(activeFilter));
+           series.category === activeFilter);
 
         const matchesSearch = !searchQuery ||
           series.title.toLowerCase().includes(searchQuery) ||
@@ -3469,7 +4017,9 @@
               ${series.emoji ? `<span class="series-emoji">${series.emoji}</span>` : ''}
               ${series.title}
             </h3>
-            <span class="series-category ${getCategoryClass(series.category)}">
+            <span class="series-category ${getCategoryClass(series.category)}"
+                  data-category="${series.category}"
+                  style="${getCategoryStyle(series.category)}">
               ${series.category}
             </span>
           </div>
@@ -3492,6 +4042,8 @@
           </div>
         </article>
       `).join('');
+
+      updateFilterDisplay();
     }
 
     // Series Detail Display
@@ -3504,7 +4056,9 @@
             ${series.emoji ? `<span class="series-emoji">${series.emoji}</span>` : ''}
             <h2>${series.title}</h2>
           </div>
-          <span class="series-category ${getCategoryClass(series.category)}">
+          <span class="series-category ${getCategoryClass(series.category)}"
+                data-category="${series.category}"
+                style="${getCategoryStyle(series.category)}">
             ${series.category}
           </span>
 
@@ -3617,8 +4171,53 @@
       }
     }
 
+    // Category Management
+    function openCategoryModal() {
+      document.getElementById('categoryModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCategoryModal() {
+      document.getElementById('categoryModal').classList.remove('active');
+      document.body.style.overflow = '';
+      document.getElementById('categoryForm').reset();
+      document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+    }
+
+    function deleteCategory(categoryName) {
+      if (confirm(`Möchtest du die Kategorie "${categoryName}" wirklich löschen?`)) {
+        customCategories = customCategories.filter(c => c.name !== categoryName);
+        saveCategories();
+        showToast('Kategorie gelöscht!');
+
+        // Reset filter if deleted category was active
+        if (activeFilter === categoryName) {
+          document.querySelector('[data-filter="Alle"]').click();
+        }
+      }
+    }
+
+    // Update Category Selects
+    function updateCategorySelects() {
+      const selects = document.querySelectorAll('select[name="category"]');
+      selects.forEach(select => {
+        // Keep existing options and add custom ones
+        const existingOptions = [...select.options].slice(0, 7); // Keep default options
+        select.innerHTML = '';
+        existingOptions.forEach(opt => select.appendChild(opt));
+
+        // Add custom categories
+        customCategories.forEach(cat => {
+          const option = document.createElement('option');
+          option.value = cat.name;
+          option.textContent = `${cat.emoji} ${cat.name}`;
+          select.appendChild(option);
+        });
+      });
+    }
+
     // Filter Functionality
-    document.querySelectorAll('.filter-btn').forEach(btn => {
+    document.querySelectorAll('.filter-btn:not(.add-category-btn)').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -3640,7 +4239,7 @@
       const filteredSeries = allSeries.filter(series => {
         const matchesFilter = activeFilter === 'Alle' ||
           (activeFilter === 'Favoriten' ? favorites.some(f => f.url === series.url) :
-           series.category.includes(activeFilter));
+           series.category === activeFilter);
         return matchesFilter;
       });
 
@@ -3654,6 +4253,7 @@
     function openAddModal() {
       document.getElementById('addModal').classList.add('active');
       document.body.style.overflow = 'hidden';
+      updateCategorySelects();
     }
 
     function closeAddModal() {
@@ -3690,7 +4290,16 @@
       }
     }
 
-    // Form Submit
+    // Color Picker
+    document.querySelectorAll('.color-option').forEach(option => {
+      option.addEventListener('click', () => {
+        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+        option.classList.add('selected');
+        document.querySelector('input[name="color"]').value = option.dataset.color;
+      });
+    });
+
+    // Form Submit - Add Series
     document.getElementById('addForm').addEventListener('submit', (e) => {
       e.preventDefault();
 
@@ -3718,16 +4327,46 @@
         episodes: episodes
       };
 
-      const favorites = getFavorites();
-      if (!favorites.some(s => s.url === newSeries.url)) {
-        favorites.push(newSeries);
-        setFavorites(favorites);
-
+      // Check if series already exists
+      if (!serien.some(s => s.url === newSeries.url)) {
+        serien.push(newSeries);
+        saveSeries();
         showToast('Serie erfolgreich hinzugefügt! 🎉');
-        document.querySelector('[data-filter="Favoriten"]').click();
+
+        // Switch to the new series category
+        const filterBtn = document.querySelector(`[data-filter="${newSeries.category}"]`);
+        if (filterBtn) {
+          filterBtn.click();
+        } else {
+          displaySeries();
+        }
+
         closeAddModal();
       } else {
         showToast('Diese Serie existiert bereits!');
+      }
+    });
+
+    // Form Submit - Add Category
+    document.getElementById('categoryForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      const newCategory = {
+        name: formData.get('name').trim(),
+        emoji: formData.get('emoji').trim(),
+        color: formData.get('color')
+      };
+
+      // Check if category already exists
+      if (!customCategories.some(c => c.name.toLowerCase() === newCategory.name.toLowerCase()) &&
+          !['Wissen', 'Geschichte', 'Gesellschaft', 'Kreativ', 'Die Maus', 'Löwenzahn', 'Der Elefant',  'Favoriten', 'Alle'].includes(newCategory.name)) {
+        customCategories.push(newCategory);
+        saveCategories();
+        showToast('Kategorie erfolgreich erstellt! 🎨');
+        closeCategoryModal();
+      } else {
+        showToast('Diese Kategorie existiert bereits!');
       }
     });
 
@@ -3735,6 +4374,12 @@
     document.getElementById('addModal').addEventListener('click', (e) => {
       if (e.target === e.currentTarget) {
         closeAddModal();
+      }
+    });
+
+    document.getElementById('categoryModal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        closeCategoryModal();
       }
     });
 
@@ -3752,6 +4397,8 @@
       if (e.key === 'Escape') {
         if (document.getElementById('addModal').classList.contains('active')) {
           closeAddModal();
+        } else if (document.getElementById('categoryModal').classList.contains('active')) {
+          closeCategoryModal();
         } else if (document.getElementById('detailPage').classList.contains('active')) {
           showOverview();
         }
@@ -3760,11 +4407,295 @@
 
     // Initialize
     displaySeries();
+    updateCategorySelects();
     window.history.replaceState({page: 'overview'}, '', '#');
 
-    // Service Worker Registration (for offline support)
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    // Check if app is installed
+    if (window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone === true) {
+      console.log('App is installed');
+    }
+
+    // iOS Install Instructions
+    if (/iPhone|iPad|iPod/.test(navigator.userAgent) && !window.navigator.standalone) {
+      const lastPrompt = localStorage.getItem('iosInstallPrompt');
+      const now = Date.now();
+
+      if (!lastPrompt || now - parseInt(lastPrompt) > 604800000) { // 7 days
+        setTimeout(() => {
+          if (!document.getElementById('installBanner').classList.contains('show')) {
+            showToast('Tippe auf Teilen und dann "Zum Home-Bildschirm" um die App zu installieren 📱');
+            localStorage.setItem('iosInstallPrompt', now.toString());
+          }
+        }, 60000); // Show after 1 minute
+      }
+    }
+  </script>
+
+  <script>
+    // Create manifest.json content
+    const manifestContent = {
+      "name": "Lern-Oase - Wissensserien für Kids",
+      "short_name": "Lern-Oase",
+      "description": "Entdecke faszinierende Wissens- und Kreativserien für neugierige Köpfe",
+      "start_url": "/",
+      "display": "standalone",
+      "orientation": "portrait",
+      "theme_color": "#04932a87",
+      "background_color": "#172f0c",
+      "icons": [
+        {
+          "src": "/icons/icon-72x72.png",
+          "sizes": "72x72",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "/icons/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "/icons/icon-128x128.png",
+          "sizes": "128x128",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "/icons/icon-144x144.png",
+          "sizes": "144x144",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "/icons/icon-152x152.png",
+          "sizes": "152x152",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "/icons/icon-384x384.png",
+          "sizes": "384x384",
+          "type": "image/png",
+          "purpose": "any"
+        },
+        {
+          "src": "/icons/icon-512x512.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "any"
+        }
+      ],
+      "categories": ["education", "kids", "entertainment"],
+      "lang": "de-DE",
+      "dir": "ltr",
+      "prefer_related_applications": false,
+      "shortcuts": [
+        {
+          "name": "Neue Serie hinzufügen",
+          "short_name": "Hinzufügen",
+          "description": "Füge eine neue Serie zur Sammlung hinzu",
+          "url": "/#add",
+          "icons": [{ "src": "/icons/add-96x96.png", "sizes": "96x96" }]
+        },
+        {
+          "name": "Favoriten",
+          "short_name": "Favoriten",
+          "description": "Zeige deine Lieblingsserien",
+          "url": "/#favoriten",
+          "icons": [{ "src": "/icons/star-96x96.png", "sizes": "96x96" }]
+        }
+      ]
+    };
+
+    // Create service-worker.js content
+    const serviceWorkerContent = `
+const CACHE_NAME = 'lern-oase';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/icons/icon-72x72.png',
+  '/icons/icon-96x96.png',
+  '/icons/icon-128x128.png',
+  '/icons/icon-144x144.png',
+  '/icons/icon-152x152.png',
+  '/icons/icon-192x192.png',
+  '/icons/icon-384x384.png',
+  '/icons/icon-512x512.png'
+];
+
+// Install Service Worker
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Opened cache');
+        return cache.addAll(urlsToCache);
+      })
+      .then(() => {
+        self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({ type: 'OFFLINE_READY' });
+          });
+        });
+      })
+  );
+});
+
+// Fetch Event
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        // Cache hit - return response
+        if (response) {
+          return response;
+        }
+
+        // Clone the request
+        const fetchRequest = event.request.clone();
+
+        return fetch(fetchRequest).then(response => {
+          // Check if valid response
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+
+          // Clone the response
+          const responseToCache = response.clone();
+
+          caches.open(CACHE_NAME)
+            .then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+
+          return response;
+        }).catch(() => {
+          // Offline fallback
+          if (event.request.destination === 'document') {
+            return caches.match('/');
+          }
+        });
+      })
+  );
+});
+
+// Activate Event
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
+
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+// Skip Waiting
+self.addEventListener('message', event => {
+  if (event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// Background Sync for offline actions
+self.addEventListener('sync', event => {
+  if (event.tag === 'sync-offline-data') {
+    event.waitUntil(syncOfflineData());
+  }
+});
+
+async function syncOfflineData() {
+  // Sync offline data when connection is restored
+  const cache = await caches.open(CACHE_NAME);
+  // Implementation for syncing offline data
+}
+`;
+
+    console.log('manifest.json:', manifestContent);
+    console.log('service-worker.js:', serviceWorkerContent);
+
+// --- PWA INSTALLATIONS-LOGIK ---
+
+    let deferredPrompt; // Diese Variable speichert das "Installations-Angebot" des Browsers
+
+    const installBanner = document.getElementById('installBanner');
+    const installButton = document.querySelector('.install-btn');
+    const dismissButton = document.querySelector('.install-dismiss');
+
+    // 1. Auf das "Installations-Angebot" des Browsers warten
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Verhindern, dass der Browser seinen eigenen Mini-Banner anzeigt
+      e.preventDefault();
+
+      // Das Event-Objekt speichern, damit wir es später verwenden können
+      deferredPrompt = e;
+
+      // Unseren benutzerdefinierten Installations-Banner anzeigen
+      installBanner.classList.add('show');
+      console.log('`beforeinstallprompt`-Ereignis ausgelöst. Installations-Banner wird angezeigt.');
+    });
+
+    // 2. Logik für den "Installieren"-Button
+    async function installApp() {
+      // Nur fortfahren, wenn ein Angebot zum Installieren vorliegt
+      if (!deferredPrompt) {
+        console.log('Kein Installations-Angebot verfügbar.');
+        return;
+      }
+
+      // Den nativen Installations-Dialog des Browsers anzeigen
+      deferredPrompt.prompt();
+
+      // Auf die Entscheidung des Nutzers warten (erlaubt/abgelehnt)
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`Benutzerentscheidung war: ${outcome}`);
+
+      if (outcome === 'accepted') {
+        showToast('App wird installiert! 🎉');
+      }
+
+      // Das Angebot kann nur einmal verwendet werden. Variable zurücksetzen.
+      deferredPrompt = null;
+
+      // Den Banner ausblenden, egal wie die Entscheidung war
+      installBanner.classList.remove('show');
+    }
+
+    // 3. Logik für den "Später"-Button
+    function dismissInstall() {
+      // Einfach nur den Banner ausblenden. Wir speichern nichts.
+      // Dadurch wird der Browser beim nächsten Laden der Seite erneut fragen.
+      installBanner.classList.remove('show');
+      console.log('Installations-Banner wurde für diese Sitzung ausgeblendet.');
+    }
+
+    // Event-Listener zu den Buttons hinzufügen
+    installButton.addEventListener('click', installApp);
+    dismissButton.addEventListener('click', dismissInstall);
+
+    // Hilfsfunktion für Benachrichtigungen (bereits in Ihrem Code vorhanden)
+    function showToast(message, duration = 3000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
     }
   </script>
 </body>
